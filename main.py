@@ -71,6 +71,8 @@ def get_minimal_dfa(dfa: Dict[str, int | List[str] | List[List[str]]]):
             if transition[2] in equivalence_class:
                 transition[2] = str(equivalence_class)
 
+    new_transitions = [list(transition) for transition in set(tuple(transition) for transition in new_transitions)]
+
     new_start_state: str = None                
     for equivalence_class in equivalence_classes:
         if dfa['start_state'] in equivalence_class:
