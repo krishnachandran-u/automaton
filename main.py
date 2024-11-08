@@ -95,6 +95,7 @@ def get_minimal_dfa(dfa: Dict[str, int | List[str] | List[List[str]]]):
         'final_states': new_final_states
     }
     # print(json.dumps(new_dfa, indent=4))
+    # draw_dfa(new_dfa)
     return new_dfa
 
 def is_isomorphic(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> bool:
