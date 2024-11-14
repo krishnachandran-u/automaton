@@ -174,3 +174,56 @@ def is_equivalent(dfa_1: Dict[str, int | List[str] | List[List[str]]], state_1: 
         return False
 
     return True
+
+def union(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+    if dfa_1['alphabet'] != dfa_2['alphabet']:
+        raise ValueError(f"Alphabets of the two DFAs do not match")
+
+    name = f'{dfa_1["name"]} & {dfa_2["name"]}'
+    new_states = [(state_1, state_2) for state_1 in dfa_1['states'] for state_2 in dfa_2['states']]
+    new_final_states = [(state_1, state_2) for state_1 in dfa_1['final_states'] for state_2 in dfa_2['states']] + [(state_1, state_2) for state_1 in dfa_1['states'] for state_2 in dfa_2['final_states']]
+    new_start_state = (dfa_1['start_state'], dfa_2['start_state'])
+    new_transitions = [
+        [(state_1, state_2), symbol, (run_transition(dfa_1, state_1, symbol), run_transition(dfa_2, state_2, symbol))]
+        for state_1, state_2 in new_states
+        for symbol in dfa_1['alphabet']
+    ]
+
+    new_dfa = {
+        'name': name,
+        'states': [str(state) for state in new_states],
+        'alphabet': dfa_1['alphabet'],
+        'transitions': [[str(transition[0]), transition[1], str(transition[2])] for transition in new_transitions],
+        'start_state': str(new_start_state),
+        'final_states': [str(state) for state in new_final_states]
+    }
+
+    return new_dfa
+
+def complement(dfa: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+    new_final_states = [state for state in dfa['states'] if state not in dfa['final_states']]
+    new_dfa = copy.deepcopy(dfa)
+    new_dfa['final_states'] = new_final_states
+    return new_dfa
+
+def remove_unreachable_states(dfa: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+    reachable_states = [dfa['start_state']]
+    new_states = [dfa['start_state']]
+    while new_states:
+        state = new_states[0]
+        new_states.pop(0)
+        for symbol in dfa['alphabet']:
+            next_state = run_transition(dfa, state, symbol)
+            if next_state not in reachable_states:
+                reachable_states.append(next_state)
+                new_states.append(next_state)
+    new_final_states = [state for state in dfa['final_states'] if state in reachable_states]
+    new_transitions = [transition for transition in dfa['transitions'] if transition[0] in reachable_states and transition[2] in reachable_states]
+    new_dfa = {
+        'name': f"<unreachable_rmd>{dfa['name']}",
+        'states': reachable_states,
+        'alphabet': dfa['alphabet'],
+        'transitions': new_transitions,
+        'start_state': dfa['start_state'],
+        'final_states': new_final_states
+    } 
