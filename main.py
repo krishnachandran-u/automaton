@@ -188,21 +188,18 @@ def get_all_strings(alphabets: list, length: int) -> list[str]:
     return strings
 
 if __name__ == '__main__':
-    DFAs: List[Dict[str, int | List[str] | List[List[str]]]]
+    DFAs: Dict[str, Dict[str, int | List[str] | List[List[str]]]]
     with open ('input.json', 'r') as file:
         DFAs = json.load(file)
 
-    if is_isomorphic(DFAs['dfa_1'], DFAs['dfa_2']):
-        print(f'DFA 1 and DFA 2 are isomorphic')
-    else:
-        print(f'DFA 1 and DFA 2 are not isomorphic')
-
-    if is_isomorphic(DFAs['dfa_1'], DFAs['dfa_3']):
-        print(f'DFA 1 and DFA 3 are isomorphic')
-    else:
-        print(f'DFA 1 and DFA 3 are not isomorphic')
-    
-    if is_isomorphic(DFAs['dfa_2'], DFAs['dfa_3']):
-        print(f'DFA 2 and DFA 3 are isomorphic')
-    else:
-        print(f'DFA 2 and DFA 3 are not isomorphic')
+    for name_1, dfa_1 in DFAs.items():
+        for name_2, dfa_2 in DFAs.items():
+            if name_1 != name_2:
+                draw_dfa(dfa_1)
+                draw_dfa(dfa_2)
+                draw_dfa(get_minimal_dfa(dfa_1))
+                draw_dfa(get_minimal_dfa(dfa_2))
+                if is_isomorphic(dfa_1, dfa_2):
+                    print(f'{name_1} and {name_2} are equivalent')
+                else:
+                    print(f'{name_1} and {name_2} are not equivalent')
