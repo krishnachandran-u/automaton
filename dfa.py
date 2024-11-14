@@ -179,7 +179,7 @@ def union(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, 
     if dfa_1['alphabet'] != dfa_2['alphabet']:
         raise ValueError(f"Alphabets of the two DFAs do not match")
 
-    name = f'{dfa_1["name"]} & {dfa_2["name"]}'
+    name = f'{dfa_1["name"]} | {dfa_2["name"]}'
     new_states = [(state_1, state_2) for state_1 in dfa_1['states'] for state_2 in dfa_2['states']]
     new_final_states = [(state_1, state_2) for state_1 in dfa_1['final_states'] for state_2 in dfa_2['states']] + [(state_1, state_2) for state_1 in dfa_1['states'] for state_2 in dfa_2['final_states']]
     new_start_state = (dfa_1['start_state'], dfa_2['start_state'])
@@ -198,7 +198,7 @@ def union(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, 
         'final_states': [str(state) for state in new_final_states]
     }
 
-    return new_dfa
+    return remove_unreachable_states(new_dfa)
 
 def complement(dfa: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
     new_final_states = [state for state in dfa['states'] if state not in dfa['final_states']]
@@ -227,3 +227,23 @@ def remove_unreachable_states(dfa: Dict[str, int | List[str] | List[List[str]]])
         'start_state': dfa['start_state'],
         'final_states': new_final_states
     } 
+    return new_dfa
+
+def intersection(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+    if dfa_1['alphabet'] != dfa_2['alphabet']:
+        raise ValueError(f"Alphabets of the two DFAs do not match")
+    
+    # A & B = (A' | B')' 
+    comp_dfa_1 = complement(dfa_1)
+    comp_dfa_2 = complement(dfa_2)
+    union_dfa = union(comp_dfa_1, comp_dfa_2)
+    comp_union_dfa = complement(union_dfa)
+
+    return comp_union_dfa
+    
+def is_lang_subset(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> bool:
+    # A is subset of B if A & B = A
+    intersection_dfa = intersection(dfa_1, dfa_2)
+    min_intersection_dfa = get_minimal_dfa(intersection_dfa)
+    min_dfa_1 = get_minimal_dfa(dfa_1)
+    return is_isomorphic(min_intersection_dfa, min_dfa_1)
