@@ -51,3 +51,17 @@ def postfix_to_tree(postfix: str) -> TreeNode:
                 node = TreeNode(leftNode=stack.pop(), value=char, rightNode=stack.pop())
             stack.append(node) 
     return stack.pop()
+
+"""
+write a formatter to insert a . between
+1. a character and an opening bracket
+2. a closing bracket and a character
+3. a closing bracket and an opening bracket
+4. a character and a kleene star
+5. a kleene star and a character
+6. a kleene star and an opening bracket
+"""
+
+"""
+handle the case when there is epsilon and phi in the regex
+"""
