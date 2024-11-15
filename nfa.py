@@ -1,5 +1,64 @@
 from typing import Dict, List
 from regex import TreeNode
+from copy import deepcopy
 
-def regexTree_to_nfa(tree: TreeNode) -> Dict[str, str | List[str] | List[List[str]]]:
-    pass
+operators_and_brackets = ['+', '.', '*', '(', ')']
+
+def regexTree_to_nfa(tree: TreeNode, cnt: int = 0) -> tuple[Dict[str, str | List[str] | List[List[str]]], int]: # postorder traversal of the regex tree
+    def is_symbol(char: str) -> bool:
+        return char not in operators_and_brackets
+
+    left_nfa = Dict[str, str | List[str] | List[List[str]]]
+    right_nfa = Dict[str, str | List[str] | List[List[str]]]
+
+    if tree.left != None:        
+        left_nfa, cnt = regexTree_to_nfa(tree.left, cnt)
+    if tree.right != None:
+        right_nfa, cnt = regexTree_to_nfa(tree.right, cnt)
+
+    if is_symbol(tree.value):
+        new_nfa = {
+            'name': f"<{id(tree)}>nfa",
+            'states': [f'p{cnt}', f'p{cnt + 1}'],
+            'alphabet': [tree.value] if tree.value not in ['ε', 'φ'] else [],
+            'transitions': [[f'p{cnt}',tree.value, f'p{cnt + 1}']] if tree.value != 'φ' else [],
+            'start_state': f'p{cnt}',
+            'final_states': [f'p{cnt + 1}'],
+        }
+        cnt += 2
+        return new_nfa, cnt
+    elif tree.value == '*':
+        new_nfa = deepcopy(left_nfa)
+        new_nfa['transitions'].append([left_nfa['start_state'], 'ε', left_nfa['final_states'][0]])
+        new_nfa['transitions'].append([left_nfa['final_states'][0], 'ε', left_nfa['start_state']])
+        return new_nfa, cnt
+
+    elif tree.value == '+':
+        new_nfa = {
+            'name': f"<{id(tree)}>nfa",
+            'states': left_nfa['states'] + right_nfa['states'],
+            'alphabet': list(set(left_nfa['alphabet'] + right_nfa['alphabet'])),
+            'transitions': left_nfa['transitions'] + right_nfa['transitions'],
+            'start_state':  left_nfa['start_state'], 
+            'final_states': right_nfa['final_states']
+        }
+
+        new_nfa['transitions'].append([left_nfa['start_state'], 'ε', right_nfa['start_state']])
+        new_nfa['transitions'].append([right_nfa['final_states'][0], 'ε', right_nfa['final_states'][0]])
+        return new_nfa, cnt
+
+    elif tree.value == '.':
+        new_nfa = {
+            'name': f"<{id(tree)}>nfa",
+            'states': left_nfa['states'] + right_nfa['states'],
+            'alphabet': list(set(left_nfa['alphabet'] + right_nfa['alphabet'])),
+            'transitions': left_nfa['transitions'] + right_nfa['transitions'],
+            'start_state':  left_nfa['start_state'], 
+            'final_states': right_nfa['final_states']
+        }
+
+        new_nfa['transitions'].append([left_nfa['final_states'][0], 'ε', right_nfa['start_state']])
+        return new_nfa, cnt
+
+    else:
+        raise ValueError(f"Invalid operator {tree.value}")

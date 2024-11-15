@@ -37,3 +37,22 @@ def draw_regexTree(tree: TreeNode):
 
     draw_tree(tree)
     dot.render(f"images/{id(tree)}", format='png', cleanup=True)
+
+def draw_nfa(nfa: Dict[str, str | List[str] | List[List[str]]]):
+    dot = graphviz.Digraph(node_attr={'shape': 'circle', 'fontname': 'Courier Prime Bold'},
+                           edge_attr={'fontname': 'Courier Prime Bold'}, 
+                           graph_attr={'dpi': '300'})  
+
+    for state in nfa['states']:
+        if state in nfa['final_states']:
+            dot.node(state, shape='doublecircle')
+        else:
+            dot.node(state)
+
+    dot.node("<>", shape='point')
+    dot.edge("<>", nfa['start_state'])
+
+    for transition in nfa['transitions']:
+        dot.edge(transition[0], transition[2], label=transition[1])
+
+    dot.render(f"images/{nfa['name']}", format='png', cleanup=True)
