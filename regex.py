@@ -56,16 +56,40 @@ def infix_to_postfix(regex: str):
     return ''.join(postfix)
 
 def postfix_to_tree(postfix: str) -> TreeNode:
-    stack = []
+    stack: List[TreeNode] = []
     operators = ['+', '.', '*']
     for char in postfix: 
         if char not in operators:
             stack.append(TreeNode(leftNode=None, value=char, rightNode=None))
         else:
             if char == '*':
-                node = TreeNode(leftNode=stack.pop(), value=char, rightNode=None)
-            else:
-                node = TreeNode(leftNode=stack.pop(), value=char, rightNode=stack.pop())
+                leftNode = stack.pop()
+                if leftNode.value in ['ε', 'φ']: # ε* = ε, φ* = ε
+                    node = TreeNode(leftNode=None, value='ε', rightNode=None)
+                else:
+                    node = TreeNode(leftNode=leftNode, value=char, rightNode=None) 
+            elif char == '.':
+                leftNode = stack.pop()
+                rightNode = stack.pop()
+                if leftNode.value == 'φ' or rightNode.value == 'φ': # φ.anything = φ
+                    node = TreeNode(leftNode=None, value='φ', rightNode=None)
+                elif leftNode.value == 'ε': # ε.anything = anything
+                    node = rightNode
+                elif rightNode.value == 'ε':
+                    node = leftNode
+                else:
+                    node = TreeNode(leftNode=leftNode, value=char, rightNode=rightNode)
+            elif char == '+':
+                leftNode = stack.pop()
+                rightNode = stack.pop()
+                if leftNode.value == 'φ': 
+                    node = rightNode
+                elif rightNode.value == 'φ':
+                    node = leftNode
+                elif leftNode.value == 'ε' and rightNode.value == 'ε':
+                    node = TreeNode(leftNode=None, value='ε', rightNode=None)
+                else:
+                    node = TreeNode(leftNode=leftNode, value=char, rightNode=rightNode)
             stack.append(node) 
     return stack.pop()
 
