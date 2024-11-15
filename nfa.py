@@ -114,6 +114,6 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
                 new_nfa['transitions'].append([left_nfa['final_states'][0], 'ε', right_nfa['start_state']])
 
             else:
-                raise ValueError(f"Invalid operator {tree.value}")
+                raise ValueError(f"Invalid operator {char}")
             stack.append(new_nfa) 
     return stack.pop()
