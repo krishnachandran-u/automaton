@@ -10,10 +10,27 @@ class TreeNode:
         self.left = leftNode
         self.value = value
         self.right = rightNode
-        
+
+def format_regex(regex: str) -> str:
+    formatted = []
+    operators_and_brackets = ['+', '.', '*', '(', ')']
+
+    def append_dot() -> None:
+        formatted.append('.')
+    def is_symbol(char: str) -> bool:
+        return char not in operators_and_brackets
+
+    for i in range(len(regex) - 1):
+        if (is_symbol(regex[i]) or regex[i] in [')', '*']) and (is_symbol(regex[i + 1]) or regex[i + 1] == '(' ):
+            append_dot()
+        formatted.append(regex[i])
+    formatted.append[regex[-1]]
+
+    return ''.join(formatted)
+
 def infix_to_postfix(regex: str):
     precedence = {
-        '+': 1, 
+        '+': 1,  
         '.': 2, 
         '*': 3, 
         '(': 0, 
@@ -51,16 +68,6 @@ def postfix_to_tree(postfix: str) -> TreeNode:
                 node = TreeNode(leftNode=stack.pop(), value=char, rightNode=stack.pop())
             stack.append(node) 
     return stack.pop()
-
-"""
-write a formatter to insert a . between
-1. a character and an opening bracket
-2. a closing bracket and a character
-3. a closing bracket and an opening bracket
-4. a character and a kleene star
-5. a kleene star and a character
-6. a kleene star and an opening bracket
-"""
 
 """
 handle the case when there is epsilon and phi in the regex
