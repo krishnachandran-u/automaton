@@ -21,10 +21,10 @@ def format_regex(regex: str) -> str:
         return char not in operators_and_brackets
 
     for i in range(len(regex) - 1):
+        formatted.append(regex[i])
         if (is_symbol(regex[i]) or regex[i] in [')', '*']) and (is_symbol(regex[i + 1]) or regex[i + 1] == '(' ):
             append_dot()
-        formatted.append(regex[i])
-    formatted.append[regex[-1]]
+    formatted.append(regex[-1])
 
     return ''.join(formatted)
 
@@ -69,8 +69,8 @@ def postfix_to_tree(postfix: str) -> TreeNode:
                 else:
                     node = TreeNode(leftNode=leftNode, value=char, rightNode=None) 
             elif char == '.':
-                leftNode = stack.pop()
                 rightNode = stack.pop()
+                leftNode = stack.pop()
                 if leftNode.value == 'φ' or rightNode.value == 'φ': # φ.anything = φ
                     node = TreeNode(leftNode=None, value='φ', rightNode=None)
                 elif leftNode.value == 'ε': # ε.anything = anything
@@ -80,8 +80,8 @@ def postfix_to_tree(postfix: str) -> TreeNode:
                 else:
                     node = TreeNode(leftNode=leftNode, value=char, rightNode=rightNode)
             elif char == '+':
-                leftNode = stack.pop()
                 rightNode = stack.pop()
+                leftNode = stack.pop()
                 if leftNode.value == 'φ': 
                     node = rightNode
                 elif rightNode.value == 'φ':
@@ -93,6 +93,7 @@ def postfix_to_tree(postfix: str) -> TreeNode:
             stack.append(node) 
     return stack.pop()
 
-"""
-handle the case when there is epsilon and phi in the regex
-"""
+def get_regexTree(regex: str) -> TreeNode:
+    formatted_regex = format_regex(regex)
+    postfix = infix_to_postfix(formatted_regex)
+    return postfix_to_tree(postfix)
