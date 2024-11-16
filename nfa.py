@@ -1,6 +1,7 @@
 from typing import Dict, List
 from regex import TreeNode
 from copy import deepcopy
+import json
 
 operators_and_brackets = ['+', '.', '*', '(', ')']
 
@@ -71,7 +72,7 @@ def regexTree_to_nfa(tree: TreeNode, cnt: int = 0) -> tuple[Dict[str, str | List
         }
 
         new_nfa = add_transition(new_nfa, left_nfa['start_states'][0], 'ε', right_nfa['start_states'][0])
-        new_nfa = add_transition(new_nfa, right_nfa['final_states'][0], 'ε', right_nfa['final_states'][0])
+        new_nfa = add_transition(new_nfa, left_nfa['final_states'][0], 'ε', right_nfa['final_states'][0])
         return new_nfa, cnt
 
     elif tree.value == '.':
@@ -130,7 +131,7 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
                 }
         
                 new_nfa = add_transition(new_nfa, left_nfa['start_states'][0], 'ε', right_nfa['start_states'][0])
-                new_nfa = add_transition(new_nfa, right_nfa['final_states'][0], 'ε', right_nfa['final_states'][0])
+                new_nfa = add_transition(new_nfa, left_nfa['final_states'][0], 'ε', right_nfa['final_states'][0])
 
             elif char == '.':
                 right_nfa = stack.pop()
@@ -149,4 +150,6 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
             else:
                 raise ValueError(f"Invalid operator {char}")
             stack.append(new_nfa) 
+    # print(json.dumps(stack[0],indent=2))
+    print(stack[0])
     return stack.pop()
