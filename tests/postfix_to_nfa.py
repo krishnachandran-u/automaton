@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     for name, regex in Regexes.items():
         formatted_regex = format_regex(regex)
+        print(f'Regex: {name} -> {formatted_regex}')
         postfix = infix_to_postfix(formatted_regex) 
         nfa = postfix_to_nfa(postfix)
         draw_nfa(nfa)
