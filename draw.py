@@ -13,7 +13,7 @@ def draw_dfa(dfa: Dict[str, str | List[str] | List[List[str]]]):
         else:
             dot.node(state)
 
-    dot.node("<>", shape='point')
+    dot.node("<>", shape='point', label='')
     dot.edge("<>", dfa['start_state'])
 
     for transition in dfa['transitions']:
@@ -49,10 +49,12 @@ def draw_nfa(nfa: Dict[str, str | List[str] | List[List[str]]]):
         else:
             dot.node(state)
 
-    dot.node("<>", shape='point')
-    dot.edge("<>", nfa['start_state'])
+    for start_state in nfa['start_states']:
+        dot.node(f"{id(start_state)}", shape='point', label='')
+        dot.edge(f"{id(start_state)}", start_state)
 
     for transition in nfa['transitions']:
-        dot.edge(transition[0], transition[2], label=transition[1])
+        for end_state in transition[2]:
+            dot.edge(transition[0], end_state, label=transition[1])
 
     dot.render(f"images/{nfa['name']}", format='png', cleanup=True)
