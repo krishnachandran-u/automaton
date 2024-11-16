@@ -153,3 +153,52 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
     # print(json.dumps(stack[0],indent=2))
     print(stack[0])
     return stack.pop()
+
+def convert_to_single_start_state(nfa: Dict[str, str | List[str] | List[List[str]]]) -> Dict[str, str | List[str] | List[List[str]]]:
+    if len(nfa['start_states']) == 1:
+        return nfa
+    else:
+        new_nfa = deepcopy(nfa)
+        new_start_state = f'start'
+        new_nfa['states'].append(new_start_state)
+        new_nfa['transitions'].append([new_start_state, 'ε', nfa['start_states']])
+        new_nfa['start_states'] = [new_start_state]
+        return new_nfa
+
+def convert_to_single_final_state(nfa: Dict[str, str | List[str] | List[List[str]]]) -> Dict[str, str | List[str] | List[List[str]]]:
+    if len(nfa['final_states']) == 1:
+        return nfa
+    else:
+        new_nfa = deepcopy(nfa)
+        new_final_state = f'final'
+        new_nfa['states'].append(new_final_state)
+        for final_state in nfa['final_states']:
+            new_nfa = add_transition(new_nfa, final_state, 'ε', new_final_state)
+        new_nfa['final_states'] = [new_final_state]
+        return new_nfa
+
+def nfa_to_regex(nfa: Dict[str, str | List[str] | List[List[str]]]) -> str:
+    nfa = convert_to_single_start_state(nfa)
+    nfa = convert_to_single_final_state(nfa)
+
+    def R(s: str, states: List[str], f: str) -> str:
+        if len(states) == 0:
+            symbols = []
+            for transition in nfa['transitions']:
+                if transition[0] == s and f in transition[2]:
+                    symbols.append(transition[1])
+            if s != f:
+                if len(symbols) == 0:
+                    return 'φ'
+                else:
+                    return '+'.join(symbols)
+            if s == f:
+                if 'ε' not in symbols:
+                    symbols.append('ε')
+                return '+'.join(symbols)
+        else:
+            r = states.pop()
+            X = states
+            return(f'{R(s, X, f)}+{R(s, X, r)}{R(r, X, r)}*{R(r, X, f)}')
+    
+    return R(nfa['start_states'][0], nfa['states'], nfa['final_states'][0])
