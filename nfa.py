@@ -199,6 +199,6 @@ def nfa_to_regex(nfa: Dict[str, str | List[str] | List[List[str]]]) -> str:
         else:
             r = states.pop()
             X = states
-            return(f'{R(s, X, f)}+{R(s, X, r)}{R(r, X, r)}*{R(r, X, f)}')
+            return(f'{R(s, X, f)}+{R(s, X, r)}({R(r, X, r)})*{R(r, X, f)}')
     
     return R(nfa['start_states'][0], nfa['states'], nfa['final_states'][0])
