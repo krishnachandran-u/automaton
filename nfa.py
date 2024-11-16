@@ -97,48 +97,54 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
     for char in postfix: 
         if char not in operators:
             new_nfa = {
-                'name': f"<{postfix}>postfix_to_nfa",
+                'name': f"<{id(postfix)}>nfa",
                 'states': [f'p{cnt}', f'p{cnt + 1}'],
                 'alphabet': [char] if char not in ['ε', 'φ'] else [],
-                'transitions': [[f'p{cnt}', char, f'p{cnt + 1}']] if char != 'φ' else [],
-                'start_state': f'p{cnt}',
+                'transitions': [],
+                'start_states': [f'p{cnt}'],
                 'final_states': [f'p{cnt + 1}'],
             }
+            if char != 'φ':
+                new_nfa = add_transition(new_nfa, f'p{cnt}', char, f'p{cnt + 1}')
+            else:
+                new_nfa['transitions'] = []
             cnt += 2
             stack.append(new_nfa)
         else:
             if char == '*':
                 left_nfa = stack.pop()
                 new_nfa = deepcopy(left_nfa)
-                new_nfa['transitions'].append([left_nfa['start_state'], 'ε', left_nfa['final_states'][0]])
-                new_nfa['transitions'].append([left_nfa['final_states'][0], 'ε', left_nfa['start_state']])
+                new_nfa = add_transition(new_nfa, left_nfa['start_states'][0], 'ε', left_nfa['final_states'][0])
+                new_nfa = add_transition(new_nfa, left_nfa['final_states'][0], 'ε', left_nfa['start_states'][0])
+
             elif char == '+':
                 right_nfa = stack.pop()
                 left_nfa = stack.pop()
                 new_nfa = {
-                   'name': f"<{postfix}>postfix_to_nfa",
-                   'states': left_nfa['states'] + right_nfa['states'],
-                   'alphabet': list(set(left_nfa['alphabet'] + right_nfa['alphabet'])),
-                   'transitions': left_nfa['transitions'] + right_nfa['transitions'],
-                   'start_state':  left_nfa['start_state'], 
-                   'final_states': right_nfa['final_states']
+                    'name': f"<{id(postfix)}>nfa",
+                    'states': left_nfa['states'] + right_nfa['states'],
+                    'alphabet': list(set(left_nfa['alphabet'] + right_nfa['alphabet'])),
+                    'transitions': left_nfa['transitions'] + right_nfa['transitions'],
+                    'start_states':  left_nfa['start_states'], 
+                    'final_states': right_nfa['final_states']
                 }
         
-                new_nfa['transitions'].append([left_nfa['start_state'], 'ε', right_nfa['start_state']])
-                new_nfa['transitions'].append([right_nfa['final_states'][0], 'ε', right_nfa['final_states'][0]])
+                new_nfa = add_transition(new_nfa, left_nfa['start_states'][0], 'ε', right_nfa['start_states'][0])
+                new_nfa = add_transition(new_nfa, right_nfa['final_states'][0], 'ε', right_nfa['final_states'][0])
 
             elif char == '.':
                 right_nfa = stack.pop()
                 left_nfa = stack.pop()
                 new_nfa = {
-                    'name': f"<{postfix}>postfix_to_nfa",
+                    'name': f"<{id(postfix)}>nfa",
                     'states': left_nfa['states'] + right_nfa['states'],
                     'alphabet': list(set(left_nfa['alphabet'] + right_nfa['alphabet'])),
                     'transitions': left_nfa['transitions'] + right_nfa['transitions'],
-                    'start_state':  left_nfa['start_state'], 
+                    'start_states':  left_nfa['start_states'], 
                     'final_states': right_nfa['final_states']
                 }
-                new_nfa['transitions'].append([left_nfa['final_states'][0], 'ε', right_nfa['start_state']])
+        
+                new_nfa = add_transition(new_nfa, left_nfa['final_states'][0], 'ε', right_nfa['start_states'][0])
 
             else:
                 raise ValueError(f"Invalid operator {char}")
