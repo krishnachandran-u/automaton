@@ -1,7 +1,7 @@
 from typing import List, Dict
 import json
 import copy
-from tools import get_all_strings
+from util import get_all_strings
 from type import DFA
 
 def run_transition(dfa: DFA, state: str, symbol: str) -> str:

@@ -3,7 +3,7 @@ from regex import TreeNode
 from copy import deepcopy
 import json
 from type import NFA, RG
-from tools import get_next_letter
+from util import get_next_letter
 
 operators_and_brackets = ['+', '.', '*', '(', ')']
 
