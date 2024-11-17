@@ -1,5 +1,0 @@
-{
-    "regex_1": "(a+b)*abb",
-    "regex_2": "(a+b)*a(a+b)(a+b)",
-    "regex_3": "(a+b)*a(a+b)(a+b)(a+b)"
-}
