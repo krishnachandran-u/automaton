@@ -8,3 +8,10 @@ def get_all_strings(alphabets: list, length: int) -> list[str]:
         for alphabet in alphabets:
             strings.append(string + alphabet)
     return strings
+
+def get_next_letter(letter: str) -> str:
+    if letter == 'z':
+        return 'a'
+    if letter == 'Z':
+        return 'A'
+    return chr(ord(letter) + 1)

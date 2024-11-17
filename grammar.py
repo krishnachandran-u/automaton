@@ -46,3 +46,11 @@ def rlg_to_nfa(rlg: RG) -> NFA:
                         nfa = add_transition(nfa, curr_state, char, next_state)
                         curr_state = next_state
     return nfa
+
+def print_rlg(rlg: RG):
+    print(f"Start Symbol: {rlg['start_symbol']}")
+    print(f"Terminals: {rlg['terminals']}")
+    print(f"Non Terminals: {rlg['non_terminals']}")
+    print("Productions:")
+    for symbol, productions in rlg['productions'].items():
+        print(f"\t{symbol} -> {' | '.join(productions)}")

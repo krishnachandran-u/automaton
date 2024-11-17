@@ -2,7 +2,8 @@ from typing import Dict, List
 from regex import TreeNode
 from copy import deepcopy
 import json
-from type import NFA
+from type import NFA, RG
+from tools import get_next_letter
 
 operators_and_brackets = ['+', '.', '*', '(', ')']
 
@@ -160,7 +161,7 @@ def convert_to_single_start_state(nfa: NFA) -> NFA:
         return nfa
     else:
         new_nfa = deepcopy(nfa)
-        new_start_state = f'start'
+        new_start_state = f'α'
         new_nfa['states'].append(new_start_state)
         new_nfa['transitions'].append([new_start_state, 'ε', nfa['start_states']])
         new_nfa['start_states'] = [new_start_state]
@@ -171,7 +172,7 @@ def convert_to_single_final_state(nfa: NFA) -> NFA:
         return nfa
     else:
         new_nfa = deepcopy(nfa)
-        new_final_state = f'final'
+        new_final_state = f'β'
         new_nfa['states'].append(new_final_state)
         for final_state in nfa['final_states']:
             new_nfa = add_transition(new_nfa, final_state, 'ε', new_final_state)
@@ -203,3 +204,37 @@ def nfa_to_regex(nfa: NFA) -> str:
             return(f'{R(s, X, f)}+{R(s, X, r)}({R(r, X, r)})*{R(r, X, f)}')
     
     return R(nfa['start_states'][0], nfa['states'], nfa['final_states'][0])
+
+
+def nfa_to_rlg(nfa: NFA) -> RG:
+    nfa = convert_to_single_start_state(nfa)
+    rlg: RG = {
+        'start_symbol': '',
+        'terminals': nfa['alphabet'],
+        'non_terminals': [],
+        'productions': {}
+    }
+    state_to_symbol = {}
+    curr_symbol = 'A'
+    for transition in nfa['transitions']:
+        if transition[0] not in state_to_symbol:
+            state_to_symbol[transition[0]] = curr_symbol
+            curr_symbol = get_next_letter(curr_symbol)
+        for end_state in transition[2]:
+            if end_state not in state_to_symbol:
+                state_to_symbol[end_state] = curr_symbol
+                curr_symbol = get_next_letter(curr_symbol)
+        for end_state in transition[2]:
+            LHS = state_to_symbol[transition[0]]
+            RHS = (transition[1] if transition[1] != 'ε' else '') + state_to_symbol[end_state]
+            if LHS not in rlg['productions']:
+                rlg['productions'][LHS] = []
+            rlg['productions'][LHS].append(RHS)
+    for _, value in state_to_symbol.items():
+        rlg['non_terminals'].append(value)
+    rlg['start_symbol'] = state_to_symbol[nfa['start_states'][0]]
+    for state in nfa['final_states']:
+        if state_to_symbol[state] not in rlg['productions']:
+            rlg['productions'][state_to_symbol[state]] = []
+        rlg['productions'][state_to_symbol[state]].append('ε')
+    return rlg
