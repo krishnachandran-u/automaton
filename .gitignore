@@ -2,3 +2,6 @@ tests/outputs/*
 !tests/outputs/.gitkeep
 .venv
 __pycache__
+build
+dist
+pykleene.egg-info
