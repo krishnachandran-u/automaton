@@ -1,6 +1,7 @@
 from typing import Dict, List
 from nfa import add_transition
 from type import RG, NFA
+from copy import deepcopy
 
 def rlg_to_nfa(rlg: RG) -> NFA:
     nfa = {
@@ -47,10 +48,17 @@ def rlg_to_nfa(rlg: RG) -> NFA:
                         curr_state = next_state
     return nfa
 
-def print_rlg(rlg: RG):
-    print(f"Start Symbol: {rlg['start_symbol']}")
-    print(f"Terminals: {rlg['terminals']}")
-    print(f"Non Terminals: {rlg['non_terminals']}")
+def print_rg(rg: RG):
+    print(f"Start Symbol: {rg['start_symbol']}")
+    print(f"Terminals: {rg['terminals']}")
+    print(f"Non Terminals: {rg['non_terminals']}")
     print("Productions:")
-    for symbol, productions in rlg['productions'].items():
+    for symbol, productions in rg['productions'].items():
         print(f"\t{symbol} -> {' | '.join(productions)}")
+
+def reverse_rg(rg: RG) -> RG:
+    reversed_rg = deepcopy(rg)
+    for symbol, productions in reversed_rg['productions'].items():
+        for i, production in enumerate(productions):
+            reversed_rg['productions'][symbol][i] = production[::-1]
+    return reversed_rg

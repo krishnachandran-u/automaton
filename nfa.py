@@ -238,3 +238,26 @@ def nfa_to_rlg(nfa: NFA) -> RG:
             rlg['productions'][state_to_symbol[state]] = []
         rlg['productions'][state_to_symbol[state]].append('ε')
     return rlg
+
+def reverse_nfa(nfa: NFA) -> NFA:
+    reversed_nfa = {
+        'name': f"<{id(nfa)}>nfa",
+        'states': nfa['states'],
+        'alphabet': nfa['alphabet'],
+        'transitions': [],
+        'start_states': nfa['final_states'],
+        'final_states': nfa['start_states']
+    }
+    transition_map: Dict[tuple[str, str], List[str]] = {}
+    for transition in nfa['transitions']:
+        for end_state in transition[2]:
+            if (end_state, transition[1]) not in transition_map:
+                transition_map[(end_state, transition[1])] = []
+            if transition[0] not in transition_map[(end_state, transition[1])]:
+                transition_map[(end_state, transition[1])].append(transition[0])
+    new_transitions = []
+    for key, value in transition_map.items():
+        new_transitions.append([key[0], key[1], value])
+    reversed_nfa['transitions'] = new_transitions
+    return reversed_nfa
+    
