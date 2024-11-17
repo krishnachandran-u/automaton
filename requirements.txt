@@ -1,1 +1,4 @@
 graphviz
+setuptools
+wheel
+twine

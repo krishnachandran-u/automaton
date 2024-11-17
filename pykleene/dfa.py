@@ -1,26 +1,35 @@
-import copy
-from utils import getAllStrings
+import graphviz
 class DFA:
-    state: set[str]
+    states: set[str]
     alphabet: set[str]
     transitions: dict[tuple[str, str], str]
     startState: str
     finalStates: set[str]
 
     def __init__(self, 
-                 state: set[str] = set(), 
+                 states: set[str] = set(), 
                  alphabet: set[str] = set(), 
                  transitions: dict[tuple[str, str], str] = dict(), 
                  startState: str = None, 
                  finalStates: set[str] = set()):
-        self.state = state
+        self.states = states
         self.alphabet = alphabet
         self.transitions = transitions
         self.startState = startState
         self.finalStates = finalStates
 
+    def loadFromJSONDict(self, data: dict):
+        try:
+            self.states = set(data['states'])
+            self.alphabet = set(data['alphabet'])
+            self.transitions = {tuple(transition[:2]): transition[2] for transition in data["transitions"]} 
+            self.startState = data['startState']
+            self.finalStates = set(data['finalStates'])
+        except Exception as e:
+            print(f"Error while loading DFA from JSON: {e}")
+
     def __str__(self):
-        states = ", ".join(self.state)
+        states = ", ".join(self.states)
         alphabet = ", ".join(self.alphabet)
         transitions = "\n".join([f"δ({q}, {a}) = {self.transitions[(q, a)]}" for (q, a) in self.transitions.items()])
         startState = self.startState
@@ -34,16 +43,19 @@ class DFA:
             currentState = self.transitions[(currentState, symbol)]
         return currentState in self.finalStates
 
-    def next_state(self, current_state: str, symbol: str) -> str:
-        if (current_state, symbol) in self.transitions:
-            return self.transitions[(current_state, symbol)]
+    def next_state(self, currentState: str, symbol: str) -> str:
+        if (currentState, symbol) in self.transitions:
+            return self.transitions[(currentState, symbol)]
         else:
             return None
 
     def minimal(self) -> 'DFA':
+        from pykleene.utils import getAllStrings
+        import copy
+
         dfaCopy = copy.deepcopy(self)
 
-        states = list(dfaCopy.state)
+        states = list(dfaCopy.states)
         alphabet = list(dfaCopy.alphabet)
         transitions = dfaCopy.transitions
         finalStates = dfaCopy.finalStates
@@ -115,7 +127,7 @@ class DFA:
         newStates = [str(equivalenceClass) for equivalenceClass in equivalenceClasses]
 
         newDfa = DFA(
-            state=set(newStates),
+            states=set(newStates),
             alphabet=set(alphabet),
             transitions=newTransitions,
             startState=newStartState,
@@ -132,7 +144,7 @@ class DFA:
             return False
         alphabet = list(minDfa1.alphabet)
     
-        if len(minDfa1.state) != len(minDfa2.state):
+        if len(minDfa1.states) != len(minDfa2.states):
             return False
     
         if (minDfa1.startState in minDfa1.finalStates) != (minDfa2.startState in minDfa2.finalStates):
@@ -168,3 +180,27 @@ class DFA:
                     bfsQueue.append((nextState1, nextState2))
     
         return True
+    
+    def image(self, dir: str = None, save: bool = False) -> 'graphviz.Digraph':
+        from pykleene.config import graphvizConfig 
+
+        dot = graphviz.Digraph(**graphvizConfig)
+
+        for state in self.states:
+            if state in self.finalStates:
+                dot.node(state, shape='doublecircle')
+            else:
+                dot.node(state)
+
+        dot.node(id(self.startState), shape='point', label='')
+        dot.edge(id(self.startState), self.startState)
+
+        for (state, symbol), nextState in self.transitions.items():
+            dot.edge(state, nextState, label=symbol)
+
+        if dir and save:
+            try:
+                dot.render(f"{dir}/<dfa>{id(self)}", format='png', cleanup=True)
+            except Exception as e:
+                print(f"Error while saving image: {e}")
+        return dot
