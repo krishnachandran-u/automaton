@@ -7,9 +7,10 @@ from typing import Dict
 from typing import List
 from grammar import rlg_to_nfa
 from draw import draw_nfa
+from type import RG
 
 if __name__ == '__main__':
-    RLGs: Dict[str, Dict[str, List[str]] | List[str]]
+    RLGs: RG 
     with open ('./inputs/rlgs.json', 'r') as file:
         RLGs = json.load(file)
     for name, rlg in RLGs.items():

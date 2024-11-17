@@ -2,20 +2,21 @@ from typing import List, Dict
 import json
 import copy
 from tools import get_all_strings
+from type import DFA
 
-def run_transition(dfa: Dict[str, int | List[str] | List[List[str]]] , state: str, symbol: str) -> str:
+def run_transition(dfa: DFA, state: str, symbol: str) -> str:
     for transition in dfa['transitions']:
         if transition[0] == state and transition[1] == symbol:
             return transition[2]
     raise ValueError(f'No transition found for state {state} and symbol {symbol} <> {json.dumps(dfa, indent=4)}')
 
-def run_dfa(dfa: Dict[str, int | List[str] | List[List[str]]], input_string: str) -> bool:
+def run_dfa(dfa: DFA, input_string: str) -> bool:
     current_state = dfa['start_state']
     for symbol in input_string:
         current_state = run_transition(dfa, current_state, symbol)
     return current_state in dfa['final_states']
 
-def get_minimal_dfa(dfa: Dict[str, int | List[str] | List[List[str]]]):
+def get_minimal_dfa(dfa: DFA):
     dfa = copy.deepcopy(dfa)
     states = dfa['states']
     alphabet = dfa['alphabet']
@@ -98,7 +99,7 @@ def get_minimal_dfa(dfa: Dict[str, int | List[str] | List[List[str]]]):
     # draw_dfa(new_dfa)
     return new_dfa
 
-def is_isomorphic(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> bool:
+def is_isomorphic(dfa_1: DFA, dfa_2: DFA) -> bool:
     min_dfa_1 = get_minimal_dfa(dfa_1)
     min_dfa_2 = get_minimal_dfa(dfa_2)
 
@@ -137,7 +138,7 @@ def is_isomorphic(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Di
 
     return True
 
-def rename_state(dfa: Dict[str, int | List[str] | List[List[str]]], old_name: str, new_name: str) -> Dict[str, int | List[str] | List[List[str]]]:
+def rename_state(dfa: DFA, old_name: str, new_name: str) -> DFA:
     new_dfa = copy.deepcopy(dfa) 
 
     for i in range(len(new_dfa['states'])):
@@ -162,7 +163,7 @@ def rename_state(dfa: Dict[str, int | List[str] | List[List[str]]], old_name: st
     # print(json.dumps(new_dfa, indent=4))
     return new_dfa
 
-def is_equivalent(dfa_1: Dict[str, int | List[str] | List[List[str]]], state_1: str, dfa_2: Dict[str, int | List[str] | List[List[str]]], state_2: str) -> bool:
+def is_equivalent(dfa_1: DFA, state_1: str, dfa_2: DFA, state_2: str) -> bool:
 
     if state_1 in dfa_1['final_states'] and state_2 not in dfa_2['final_states']:
         return False
@@ -175,7 +176,7 @@ def is_equivalent(dfa_1: Dict[str, int | List[str] | List[List[str]]], state_1: 
 
     return True
 
-def union(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+def union(dfa_1: DFA, dfa_2: DFA) -> DFA:
     if dfa_1['alphabet'] != dfa_2['alphabet']:
         raise ValueError(f"Alphabets of the two DFAs do not match")
 
@@ -200,13 +201,13 @@ def union(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, 
 
     return remove_unreachable_states(new_dfa)
 
-def complement(dfa: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+def complement(dfa: DFA) -> DFA:
     new_final_states = [state for state in dfa['states'] if state not in dfa['final_states']]
     new_dfa = copy.deepcopy(dfa)
     new_dfa['final_states'] = new_final_states
     return new_dfa
 
-def remove_unreachable_states(dfa: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+def remove_unreachable_states(dfa: DFA) -> DFA:
     reachable_states = [dfa['start_state']]
     new_states = [dfa['start_state']]
     while new_states:
@@ -229,7 +230,7 @@ def remove_unreachable_states(dfa: Dict[str, int | List[str] | List[List[str]]])
     } 
     return new_dfa
 
-def intersection(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> Dict[str, int | List[str] | List[List[str]]]:
+def intersection(dfa_1: DFA, dfa_2: DFA) -> DFA:
     if dfa_1['alphabet'] != dfa_2['alphabet']:
         raise ValueError(f"Alphabets of the two DFAs do not match")
     
@@ -241,7 +242,7 @@ def intersection(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dic
 
     return comp_union_dfa
     
-def is_lang_subset(dfa_1: Dict[str, int | List[str] | List[List[str]]], dfa_2: Dict[str, int | List[str] | List[List[str]]]) -> bool:
+def is_lang_subset(dfa_1: DFA, dfa_2: DFA) -> bool:
     # A is subset of B if A & B = A
     intersection_dfa = intersection(dfa_1, dfa_2)
     min_intersection_dfa = get_minimal_dfa(intersection_dfa)

@@ -5,9 +5,10 @@ sys.path.append('./../')
 from typing import List, Dict
 import json
 from dfa import is_lang_subset
+from type import DFA
 
 if __name__ == '__main__':
-    DFAs: Dict[str, Dict[str, int | List[str] | List[List[str]]]]
+    DFAs: Dict[str, DFA]
     with open ('./inputs/dfas.json', 'r') as file:
         DFAs = json.load(file)
 

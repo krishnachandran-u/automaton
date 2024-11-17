@@ -1,7 +1,8 @@
 from typing import Dict, List
 from nfa import add_transition
+from type import RG, NFA
 
-def rlg_to_nfa(rlg: Dict[str, Dict[str, List[str]] | List[str]]) -> Dict[str, str | List[str] | List[List[str]]]:
+def rlg_to_nfa(rlg: RG) -> NFA:
     nfa = {
         'name': f"<{id(rlg)}>nfa",
         'states': [rlg['start_symbol']],

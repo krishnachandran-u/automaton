@@ -2,10 +2,11 @@ from typing import Dict, List
 from regex import TreeNode
 from copy import deepcopy
 import json
+from type import NFA
 
 operators_and_brackets = ['+', '.', '*', '(', ')']
 
-def add_transition(nfa: Dict[str, str | List[str] | List[List[str | List[str]]]], start_state: str, symbol: str, end_state: str) -> Dict[str, str | List[str] | List[List[str | List[str]]]]:
+def add_transition(nfa: NFA, start_state: str, symbol: str, end_state: str) -> NFA:
     for transition in nfa['transitions']:
         if transition[0] == start_state and transition[1] == symbol:
             if end_state not in transition[2]:
@@ -28,12 +29,12 @@ def combine_transitions(t1: List[str | List[str]], t2: List[str | List[str]]) ->
     return combined_transitions
 """
 
-def regexTree_to_nfa(tree: TreeNode, cnt: int = 0) -> tuple[Dict[str, str | List[str] | List[List[str]]], int]: # postorder traversal of the regex tree
+def regexTree_to_nfa(tree: TreeNode, cnt: int = 0) -> tuple[NFA, int]: # postorder traversal of the regex tree
     def is_symbol(char: str) -> bool:
         return char not in operators_and_brackets
 
-    left_nfa = Dict[str, str | List[str] | List[List[str]]]
-    right_nfa = Dict[str, str | List[str] | List[List[str]]]
+    left_nfa: NFA 
+    right_nfa: NFA 
 
     if tree.left != None:        
         left_nfa, cnt = regexTree_to_nfa(tree.left, cnt)
@@ -91,8 +92,8 @@ def regexTree_to_nfa(tree: TreeNode, cnt: int = 0) -> tuple[Dict[str, str | List
     else:
         raise ValueError(f"Invalid operator {tree.value}")
 
-def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]: 
-    stack: List[Dict[str, str | List[str] | List[List[str]]]] = []
+def postfix_to_nfa(postfix: str) -> NFA: 
+    stack: List[NFA] = []
     operators = ['+', '.', '*']
     cnt: int = 0
     for char in postfix: 
@@ -154,7 +155,7 @@ def postfix_to_nfa(postfix: str) -> Dict[str, str | List[str] | List[List[str]]]
     print(stack[0])
     return stack.pop()
 
-def convert_to_single_start_state(nfa: Dict[str, str | List[str] | List[List[str]]]) -> Dict[str, str | List[str] | List[List[str]]]:
+def convert_to_single_start_state(nfa: NFA) -> NFA:
     if len(nfa['start_states']) == 1:
         return nfa
     else:
@@ -165,7 +166,7 @@ def convert_to_single_start_state(nfa: Dict[str, str | List[str] | List[List[str
         new_nfa['start_states'] = [new_start_state]
         return new_nfa
 
-def convert_to_single_final_state(nfa: Dict[str, str | List[str] | List[List[str]]]) -> Dict[str, str | List[str] | List[List[str]]]:
+def convert_to_single_final_state(nfa: NFA) -> NFA:
     if len(nfa['final_states']) == 1:
         return nfa
     else:
@@ -177,7 +178,7 @@ def convert_to_single_final_state(nfa: Dict[str, str | List[str] | List[List[str
         new_nfa['final_states'] = [new_final_state]
         return new_nfa
 
-def nfa_to_regex(nfa: Dict[str, str | List[str] | List[List[str]]]) -> str:
+def nfa_to_regex(nfa: NFA) -> str:
     nfa = convert_to_single_start_state(nfa)
     nfa = convert_to_single_final_state(nfa)
 
