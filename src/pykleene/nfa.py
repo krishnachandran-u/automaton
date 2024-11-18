@@ -26,6 +26,14 @@ class NFA:
         self.startStates = set(data['startStates'])
         self.finalStates = set(data['finalStates'])
 
+    def _addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
+        for (state, sym), nextStates in self.transitions.items():
+            if state == startState and sym == symbol:
+                nextStates.add(endState)
+                return self
+        self.transitions[(startState, symbol)] = {endState}
+        return self
+
     def singleStartStateNFA(self) -> 'NFA':
         from copy import deepcopy
         newNfa = deepcopy(self)
@@ -74,7 +82,7 @@ class NFA:
             else:
                 r = states.pop()
                 X = states
-                return f"({R(startState, X, finalState)}+{R(startState, X, r)}({R(r, X, r)})*{R(r, X, finalState)})"
+                return f"(({R(startState, X, finalState)})+({R(startState, X, r)})({R(r, X, r)})*({R(r, X, finalState)}))"
 
     def reverse(self) -> 'NFA':
         reversedNfa = NFA(
@@ -84,7 +92,7 @@ class NFA:
             startStates=self.finalStates,
             finalStates=self.startStates
         )
-        transMap = dict()
+        transMap: dict[tuple[str, str], set[str]] = dict()
         for (state, symbol), nextStates in self.transitions.items():
             for nextState in nextStates:
                 if (nextState, symbol) not in transMap:
