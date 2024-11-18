@@ -43,7 +43,7 @@ class DFA:
             currentState = self.transitions[(currentState, symbol)]
         return currentState in self.finalStates
 
-    def next_state(self, currentState: str, symbol: str) -> str:
+    def nextState(self, currentState: str, symbol: str) -> str:
         if (currentState, symbol) in self.transitions:
             return self.transitions[(currentState, symbol)]
         else:
@@ -169,8 +169,8 @@ class DFA:
             state1, state2 = bfsQueue.pop(0)
     
             for symbol in alphabet:
-                nextState1 = minDfa1.next_state(state1, symbol)
-                nextState2 = minDfa2.next_state(state2, symbol)
+                nextState1 = minDfa1.nextState(state1, symbol)
+                nextState2 = minDfa2.nextState(state2, symbol)
     
                 if areStatesNonEquivalent(nextState1, nextState2):
                     return False
@@ -204,3 +204,81 @@ class DFA:
             except Exception as e:
                 print(f"Error while saving image: {e}")
         return dot
+
+    def union(self, dfa: 'DFA') -> 'DFA':
+        if self.alphabet != dfa.alphabet: 
+            print("Alphabets of the DFAs do not match.")
+            return None
+
+        newStates = set((state1, state2) for state1 in self.states for state2 in dfa.states)
+        newFinalStates = set((state1, state2) for state1 in self.finalStates for state2 in dfa.states) | set((state1, state2) for state1 in self.states for state2 in dfa.finalStates)
+        newStartState = (self.startState, dfa.startState)
+        newTransitions = set(
+            ((state1, state2), symbol, (self.nextState(state1, symbol), dfa.nextState(state2, symbol))) 
+            for state1, state2 in newStates 
+            for symbol in self.alphabet
+        )
+
+        unionDfa = DFA(
+            states = set(str(state) for state in newStates),
+            alphabet = self.alphabet,
+            transitions = {(str(state), symbol): str(nextState) for (state, symbol, nextState) in newTransitions},
+            startState = str(newStartState),
+            finalStates = set(str(state) for state in newFinalStates)
+        )
+
+        return unionDfa
+
+    def complement(self) -> 'DFA':
+        complementDfa = DFA(
+            states = self.states,
+            alphabet = self.alphabet,
+            transitions = self.transitions,
+            startState = self.startState,
+            finalStates = self.states - self.finalStates
+        )
+
+        return complementDfa
+
+    def intersection(self, dfa: 'DFA') -> 'DFA':
+        complementSelf = self.complement() 
+        complementDfa = dfa.complement()
+        unionDfa = complementSelf.union(complementDfa)
+        complementUnionDfa = unionDfa.complement()
+
+        return complementUnionDfa
+
+    def reachable(self) -> 'DFA':
+        reachableStates = set()
+        reachableStates.add(self.startState)
+
+        statesQueue = [self.startState]
+
+        while statesQueue:
+            state = statesQueue.pop(0)
+            for symbol in self.alphabet:
+                nextState = self.nextState(state, symbol)
+                if nextState not in reachableStates:
+                    reachableStates.add(nextState)
+                    statesQueue.append(nextState)
+
+        newFinalStates = self.finalStates & reachableStates
+        newTransitions = {(state, symbol): nextState 
+                          for (state, symbol), nextState in self.transitions.items() 
+                          if state in reachableStates and nextState in reachableStates}
+
+        reachableDfa = DFA(
+            states = reachableStates,
+            alphabet = self.alphabet,
+            transitions = newTransitions,
+            startState = self.startState,
+            finalStates = newFinalStates
+        )
+
+        return reachableDfa
+
+    def isLangSubset(self, dfa: 'DFA') -> bool:
+        intersectionDfa = self.intersection(dfa)
+        minimalIntersectionDfa = intersectionDfa.minimal()
+        minSelf = self.minimal()
+        return minSelf.isomorphic(minimalIntersectionDfa)
