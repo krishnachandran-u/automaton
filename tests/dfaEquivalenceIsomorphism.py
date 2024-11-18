@@ -1,7 +1,7 @@
 from pykleene.dfa import DFA
 from typing import Dict
+from config import INPUTPATH, OUTPUTDIR
 import sys
-from tests.config import INPUTPATH, OUTPUTDIR
 import json
 
 FILENAME = 'dfas.json'
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     for dfaName, dfaData in DFAs.items():
         dfa = DFA()
         dfa.loadFromJSONDict(dfaData)
-        dfa.image(dir=OUTPUTDIR, save=True)
+        dfa.image(dir=OUTPUTDIR(sys.argv[0]), save=True)
         DFAs[dfaName] = dfa
 
     for dfaName1, dfa1 in DFAs.items():

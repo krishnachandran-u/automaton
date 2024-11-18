@@ -192,8 +192,8 @@ class DFA:
             else:
                 dot.node(state)
 
-        dot.node(id(self.startState), shape='point', label='')
-        dot.edge(id(self.startState), self.startState)
+        dot.node(f'{id(self.startState)}', shape='point', label='')
+        dot.edge(f'{id(self.startState)}', self.startState)
 
         for (state, symbol), nextState in self.transitions.items():
             dot.edge(state, nextState, label=symbol)
