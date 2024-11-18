@@ -182,7 +182,7 @@ class DFA:
         return True
     
     def image(self, dir: str = None, save: bool = False) -> 'graphviz.Digraph':
-        from pykleene.config import graphvizConfig 
+        from _config import graphvizConfig 
 
         dot = graphviz.Digraph(**graphvizConfig)
 
