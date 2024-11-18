@@ -52,3 +52,45 @@ class NFA:
             newNfa.transitions[(finalState, 'ε')] = {newFinalState}
         newNfa.finalStates = {newFinalState}
         return newNfa 
+
+    def regex(self) -> str:
+        nfa = self.singleStartStateNFA().singleFinalStateNFA()
+
+        def R(startState: str, states: set[str], finalState: str) -> str:
+            if len(states) == 0:
+                alphabet = set()
+                for (state, symbol), nextStates in nfa.transitions.items():
+                    if state == startState and finalState in nextStates:
+                        alphabet.add(symbol) 
+                if startState != finalState:
+                    if len(alphabet) == 0:
+                        return 'φ'
+                    else:
+                        return '+'.join(alphabet)
+                if startState == finalState:
+                    if 'ε' not in alphabet:
+                        alphabet.add('ε')
+                    return '+'.join(alphabet)
+            else:
+                r = states.pop()
+                X = states
+                return f"({R(startState, X, finalState)}+{R(startState, X, r)}({R(r, X, r)})*{R(r, X, finalState)})"
+
+    def reverse(self) -> 'NFA':
+        reversedNfa = NFA(
+            states=self.states,
+            alphabet=self.alphabet,
+            transitions=dict(),
+            startStates=self.finalStates,
+            finalStates=self.startStates
+        )
+        transMap = dict()
+        for (state, symbol), nextStates in self.transitions.items():
+            for nextState in nextStates:
+                if (nextState, symbol) not in transMap:
+                    transMap[(nextState, symbol)] = set()
+                if state not in transMap[(nextState, symbol)]:
+                    transMap[(nextState, symbol)].add(state)
+        reversedNfa.transitions = transMap
+        return reversedNfa
+            
