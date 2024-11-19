@@ -47,12 +47,14 @@ class NFA:
         self.finalStates = set(data['finalStates'])
 
     def addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
-        for (state, sym), nextStates in self.transitions.items():
+        from copy import deepcopy
+        nfa = deepcopy(self)
+        for (state, sym), nextStates in nfa.transitions.items():
             if state == startState and sym == symbol:
                 nextStates.add(endState)
-                return self
-        self.transitions[(startState, symbol)] = {endState}
-        return self
+                return nfa
+        nfa.transitions[(startState, symbol)] = {endState}
+        return nfa
 
     def singleStartStateNFA(self) -> 'NFA':
         from copy import deepcopy
@@ -123,7 +125,7 @@ class NFA:
         return reversedNfa
 
     def grammar(self) -> 'Grammar':
-        from utils import _getNextLetter
+        from pykleene.utils import _getNextLetter
         from copy import deepcopy
         nfa = self.singleStartStateNFA()
         grammar = Grammar(
@@ -164,7 +166,7 @@ class NFA:
         return grammar
 
     def image(self, dir: str = None, save: bool = False) -> 'graphviz.Digraph':
-        from _config import graphvizConfig 
+        from pykleene._config import graphvizConfig 
 
         dot = graphviz.Digraph(**graphvizConfig)
 

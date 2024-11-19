@@ -1,5 +1,5 @@
 from nfa import NFA
-from _helpers import BinaryTreeNode 
+from pykleene._helpers import BinaryTreeNode 
 
 class RE:
     OPERATORS = ['+', '.', '*']
@@ -14,7 +14,6 @@ class RE:
 
     def _isSymbol(char: str) -> bool:
         return char not in RE.OPERATORS and char not in RE.PARENTHESES
-
 
     def format(regex: str) -> str:
         formatted = []
@@ -103,12 +102,14 @@ class RE:
                     finalStates = {f"q{cnt + 1}"}
                 )
                 cnt += 2
+                if node.data != 'φ':
+                    newNfa = newNfa.addTransition(f"q{cnt - 2}", node.data, f"q{cnt - 1}")
                 return newNfa, cnt
 
             elif node.data == '*':
                 newNfa = deepcopy(leftChild)
-                newNfa._addTransition(list(leftChild.startStates)[0], 'ε', list(leftChild.finalStates)[0])
-                newNfa._addTransition(list(leftChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftChild.startStates)[0], 'ε', list(leftChild.finalStates)[0])
+                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
                 return newNfa, cnt
 
             elif node.data == '+':
@@ -120,8 +121,8 @@ class RE:
                     finalStates=rightChild.finalStates
                 )
 
-                newNfa._addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
-                newNfa._addTransition(list(rightChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(rightChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
                 return newNfa, cnt
 
             elif node.data == '.':
@@ -133,7 +134,7 @@ class RE:
                     finalStates = rightChild.finalStates
                 )
 
-                newNfa._addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
                 return newNfa, cnt
 
             else:
@@ -144,7 +145,7 @@ class RE:
             cnt: int = 0
             
             for char in postfix:
-                if char not in RE.OPERATORS:  # If the character is a symbol
+                if char not in RE.OPERATORS:  
                     newNfa = NFA(
                         states={f"q{cnt}", f"q{cnt + 1}"},
                         alphabet={char} if char not in ['ε', 'φ'] else set(),
@@ -154,17 +155,17 @@ class RE:
                     )
                     cnt += 2
                     if char != 'φ':
-                        newNfa._addTransition(f"q{cnt - 2}", char, f"q{cnt - 1}")
+                        newNfa = newNfa.addTransition(f"q{cnt - 2}", char, f"q{cnt - 1}")
                     stack.append(newNfa)
                 
-                elif char == '*':  # Kleene star operation
+                elif char == '*':  
                     leftNfa = stack.pop()
                     newNfa = deepcopy(leftNfa)
-                    newNfa._addTransition(list(leftNfa.startStates)[0], 'ε', list(leftNfa.finalStates)[0])
-                    newNfa._addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(leftNfa.finalStates)[0])
+                    newNfa = newNfa._addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                     stack.append(newNfa)
                 
-                elif char == '+':  # Union operation (alternation)
+                elif char == '+':  
                     rightNfa = stack.pop()
                     leftNfa = stack.pop()
                     newNfa = NFA(
@@ -174,11 +175,11 @@ class RE:
                         startStates=leftNfa.startStates,
                         finalStates=rightNfa.finalStates
                     )
-                    newNfa._addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
-                    newNfa._addTransition(list(rightNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(rightNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                     stack.append(newNfa)
                 
-                elif char == '.':  # Concatenation operation
+                elif char == '.':  
                     rightNfa = stack.pop()
                     leftNfa = stack.pop()
                     newNfa = NFA(
@@ -188,17 +189,14 @@ class RE:
                         startStates=leftNfa.startStates,
                         finalStates=rightNfa.finalStates
                     )
-                    newNfa._addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
                     stack.append(newNfa)
                 
                 else:
                     raise ValueError(f"Invalid operator {char}")
             
-            # The stack should now contain only one NFA, which is the result
             return stack.pop()
  
-
-
         if method == 'expressionTree':
             return regexTreeToNfa(RE.expressionTree(regex))
 

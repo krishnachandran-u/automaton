@@ -41,6 +41,7 @@ class DFA:
         currentState = self.startState
         for symbol in string:
             currentState = self.transitions[(currentState, symbol)]
+            # print(currentState)
         return currentState in self.finalStates
 
     def nextState(self, currentState: str, symbol: str) -> str:
@@ -182,7 +183,7 @@ class DFA:
         return True
     
     def image(self, dir: str = None, save: bool = False) -> 'graphviz.Digraph':
-        from _config import graphvizConfig 
+        from pykleene._config import graphvizConfig 
 
         dot = graphviz.Digraph(**graphvizConfig)
 
@@ -227,7 +228,7 @@ class DFA:
             finalStates = set(str(state) for state in newFinalStates)
         )
 
-        return unionDfa
+        return unionDfa.reachable()
 
     def complement(self) -> 'DFA':
         complementDfa = DFA(
