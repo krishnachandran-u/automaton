@@ -1,5 +1,6 @@
 
 from pykleene.grammar import Grammar
+import graphviz
 class NFA:
     states: set[str]
     alphabet: set[str]
@@ -18,6 +19,23 @@ class NFA:
         self.transitions = transitions
         self.startStates = startStates
         self.finalStates = finalStates
+
+    def isValid(self) -> bool:
+        for (state, symbol), nextStates in self.transitions.items():
+            if state not in self.states:
+                return False
+            if symbol not in self.alphabet:
+                return False
+            for nextState in nextStates:
+                if nextState not in self.states:
+                    return False
+        for startState in self.startStates:
+            if startState not in self.states:
+                return False
+        for finalState in self.finalStates:
+            if finalState not in self.states:
+                return False
+        return True
 
     def loadFromJSONDict(self, data: dict):
         self.states = set(data['states'])
@@ -145,5 +163,29 @@ class NFA:
 
         return grammar
 
+    def image(self, dir: str = None, save: bool = False) -> 'graphviz.Digraph':
+        from _config import graphvizConfig 
 
-        
+        dot = graphviz.Digraph(**graphvizConfig)
+
+        for state in self.states:
+            if state in self.finalStates:
+                dot.node(state, shape='doublecircle')
+            else:
+                dot.node(state)
+
+        for startState in self.startStates:
+            dot.node(f'{id(startState)}', shape='point', label='')
+            dot.edge(f'{id(startState)}', startState)
+
+        for (state, symbol), nextStates in self.transitions.items():
+            for nextState in nextStates:
+                dot.edge(state, nextState, label=symbol)
+
+        if dir and save:
+            try:
+                dot.render(f"{dir}/<nfa>{id(self)}", format='png', cleanup=True)
+            except Exception as e:
+                print(f"Error while saving image: {e}")
+
+        return dot
