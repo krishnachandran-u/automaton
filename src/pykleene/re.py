@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING
+import graphviz
 
 if TYPE_CHECKING:
     from pykleene.nfa import NFA
@@ -89,58 +90,61 @@ class RE:
     def nfa(regex: str, method: str = 'regexTree') -> 'NFA':
         from pykleene.nfa import NFA
         from pykleene._helpers import BinaryTreeNode 
-        def regexTreeToNfa(node: BinaryTreeNode, cnt: int = 0) -> NFA: 
+
+        def regexTreeToNfa(node: BinaryTreeNode, cnt: int = 0) -> tuple[NFA, int]:
             from copy import deepcopy
-            leftChild: NFA
-            rightChild: NFA
+            leftNfa: NFA 
+            rightNfa: NFA
 
             if node.leftChild is not None:
-                leftChild = regexTreeToNfa(node.leftChild, cnt)
+                leftNfa, cnt = regexTreeToNfa(node.leftChild, cnt)
             if node.rightChild is not None:
-                rightChild = regexTreeToNfa(node.rightChild, cnt)
+                rightNfa, cnt = regexTreeToNfa(node.rightChild, cnt)
 
             if RE._isSymbol(node.data):
                 newNfa = NFA(
                     states = {f"q{cnt}", f"q{cnt + 1}"}, 
                     alphabet= {node.data} if node.data not in ['ε', 'φ'] else set(),
-                    transitions = set(),
+                    transitions = dict(),
                     startStates = {f"q{cnt}"},
                     finalStates = {f"q{cnt + 1}"}
                 )
                 cnt += 2
                 if node.data != 'φ':
                     newNfa = newNfa.addTransition(f"q{cnt - 2}", node.data, f"q{cnt - 1}")
+                else:
+                    newNfa.transitions = dict()
                 return newNfa, cnt
 
             elif node.data == '*':
-                newNfa = deepcopy(leftChild)
-                newNfa = newNfa.addTransition(list(leftChild.startStates)[0], 'ε', list(leftChild.finalStates)[0])
-                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
+                newNfa = deepcopy(leftNfa)
+                newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(leftNfa.finalStates)[0])
+                newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                 return newNfa, cnt
 
             elif node.data == '+':
                 newNfa = NFA(
-                    states=leftChild.states | rightChild.states,
-                    alphabet=leftChild.alphabet | rightChild.alphabet,
-                    transitions=leftChild.transitions | rightChild.transitions,
-                    startStates=leftChild.startStates, 
-                    finalStates=rightChild.finalStates
+                    states=leftNfa.states | rightNfa.states,
+                    alphabet=leftNfa.alphabet | rightNfa.alphabet,
+                    transitions=leftNfa.transitions | rightNfa.transitions,
+                    startStates=leftNfa.startStates, 
+                    finalStates=rightNfa.finalStates
                 )
 
-                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
-                newNfa = newNfa.addTransition(list(rightChild.finalStates)[0], 'ε', list(leftChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
+                newNfa = newNfa.addTransition(list(rightNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                 return newNfa, cnt
 
             elif node.data == '.':
                 newNfa = NFA(
-                    states = leftChild.states | rightChild.states,
-                    alphabet = leftChild.alphabet | rightChild.alphabet,
-                    transitions = leftChild.transitions | rightChild.transitions,
-                    startStates = leftChild.startStates, 
-                    finalStates = rightChild.finalStates
+                    states = leftNfa.states | rightNfa.states,
+                    alphabet = leftNfa.alphabet | rightNfa.alphabet,
+                    transitions = leftNfa.transitions | rightNfa.transitions,
+                    startStates = leftNfa.startStates, 
+                    finalStates = rightNfa.finalStates
                 )
 
-                newNfa = newNfa.addTransition(list(leftChild.finalStates)[0], 'ε', list(rightChild.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
                 return newNfa, cnt
 
             else:
@@ -156,7 +160,7 @@ class RE:
                     newNfa = NFA(
                         states={f"q{cnt}", f"q{cnt + 1}"},
                         alphabet={char} if char not in ['ε', 'φ'] else set(),
-                        transitions=set(),
+                        transitions=dict(),
                         startStates={f"q{cnt}"},
                         finalStates={f"q{cnt + 1}"}
                     )
@@ -204,13 +208,34 @@ class RE:
             
             return stack.pop()
  
-        if method == 'expressionTree':
-            return regexTreeToNfa(RE.expressionTree(regex))
+        if method == 'regexTree':
+            return regexTreeToNfa(RE.expressionTree(RE.format(regex)))[0]
 
-        if method == 'regexPostfix':
+        if method == 'postfix':
             return regexPostfixToNfa(RE.postfix(RE.format(regex)))
 
         else:
             raise ValueError(f"Invalid method: {method}")
-             
+    
+    def image(param, type: str = 'regexTree', dir: str = None, save: bool = False) -> None:
+        from pykleene._config import graphvizConfig 
+        from pykleene._helpers import BinaryTreeNode
+        dot = graphviz.Digraph(**graphvizConfig)
+
+        def drawRegexTree(node: BinaryTreeNode):
+            dot.node(str(id(node)), node.data)
+            if node.leftChild is not None:
+                drawRegexTree(node.leftChild)
+                dot.edge(str(id(node)), str(id(node.leftChild)))
+            if node.rightChild is not None:
+                drawRegexTree(node.rightChild)
+                dot.edge(str(id(node)), str(id(node.rightChild)))
+
+        if type == 'regexTree':
+            drawRegexTree(param)
+            dot.render(f"{dir}/<regexTree>{id(param)}", format='png', cleanup=True)
+
+        else:
+            raise ValueError(f"Invalid type: {type}")
+
   
