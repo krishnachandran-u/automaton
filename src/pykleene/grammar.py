@@ -20,17 +20,20 @@ class Grammar:
             newGrammar = Grammar()
             newGrammar.nonTerminals = set(data['nonTerminals'])
             newGrammar.terminals = set(data['terminals'])
-            for production in data['productions']:
-                if production[0] in newGrammar.productions:
-                    newGrammar.productions[production[0]].add(production[1])
-                else:
-                    newGrammar.productions[production[0]] = set(production[1])
+            newGrammar.productions = dict()
+            for lhs, productions in data['productions'].items():
+                if lhs not in newGrammar.productions:
+                    newGrammar.productions[lhs] = set()
+                newGrammar.productions[lhs] = newGrammar.productions[lhs] | set(productions)
             newGrammar.startSymbol = data['startSymbol']
         except Exception as e:
-            print(f"Illegal format: {e}")
+            print(f"Illegal JSONDict: {e}")
         
         if newGrammar.isValid():
-            self = newGrammar
+            self.nonTerminals = newGrammar.nonTerminals
+            self.terminals = newGrammar.terminals
+            self.productions = newGrammar.productions
+            self.startSymbol = newGrammar.startSymbol  
         else:
             raise ValueError("Invalid grammar")
 
@@ -49,8 +52,8 @@ class Grammar:
                 return False
             if lhs == self.startSymbol:
                 startSymbolFound = True
-            for i, char in enumerate(lhs):
-                if char not in self.nonTerminals or char not in self.terminals:
+            for char in lhs:
+                if char not in self.nonTerminals and char not in self.terminals:
                     return False
             for rhs in productions:
                 if len(rhs) == 0:
@@ -76,7 +79,7 @@ class Grammar:
                     return False
                 if rhs == 'ε':
                     continue
-                if rhs[0] not in self.terminals or rhs[0] not in self.nonTerminals:
+                if rhs[0] not in self.terminals and rhs[0] not in self.nonTerminals:
                     return False
                 for char in rhs[1:]:
                     if char not in self.terminals:
@@ -94,14 +97,14 @@ class Grammar:
                     return False
                 if rhs == 'ε':
                     continue
-                if rhs[-1] not in self.terminals or rhs[-1] not in self.nonTerminals:
+                if rhs[-1] not in self.terminals and rhs[-1] not in self.nonTerminals:
                     return False
                 for char in rhs[:-1]:
                     if char not in self.terminals:
                         return False
         return True
     def isRegular(self) -> bool:
-        if not self.valid():
+        if not self.isValid():
             return False 
         return self.isLeftLinear() or self.isRightLinear()
 
@@ -122,7 +125,7 @@ class Grammar:
             nfa = NFA(
                 states={self.startSymbol},
                 alphabet=self.terminals,
-                transitions=set(),
+                transitions=dict(),
                 startStates={self.startSymbol},
                 finalStates=set()
             )
@@ -135,28 +138,28 @@ class Grammar:
                     elif rhs in self.terminals:
                         nextState = self._getNewState()
                         nfa.states.add(nextState)
-                        nfa.addTransition(lhs, rhs, nextState)
+                        nfa = nfa.addTransition(lhs, rhs, nextState)
                         nfa.finalStates.add(nextState)
                     elif rhs in self.nonTerminals:
                         nextState = rhs
-                        nfa.addTransition(lhs, 'ε', nextState)
+                        nfa = nfa.addTransition(lhs, 'ε', nextState)
                     else:
                         currState = lhs
                         for i, char in enumerate(rhs[:-1]):
                             if i == len(rhs) - 2 and rhs[i + 1] in self.nonTerminals:
                                 nextState = rhs[i + 1]
                                 nfa.states.add(nextState)
-                                nfa.addTransition(currState, char, nextState)
+                                nfa = nfa.addTransition(currState, char, nextState)
                                 break
                             if i == len(rhs) - 1:
                                 nextState = self._getNewState()
                                 nfa.states.add(nextState)
                                 nfa.addTransition(currState, char, nextState)
-                                nfa.finalStates.add(nextState)
+                                nfa = nfa.finalStates.add(nextState)
                             else:
                                 nextState = self._getNewState() 
                                 nfa.states.add(nextState)
-                                nfa.addTransition(currState, char, nextState)
+                                nfa = nfa.addTransition(currState, char, nextState)
                                 currState = nextState
             return nfa
 
