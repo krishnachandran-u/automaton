@@ -1,6 +1,8 @@
-
-from pykleene.grammar import Grammar
+from typing import TYPE_CHECKING
 import graphviz
+
+if TYPE_CHECKING:
+    from pykleene.grammar import Grammar
 class NFA:
     states: set[str]
     alphabet: set[str]
@@ -106,6 +108,8 @@ class NFA:
                 X = states
                 return f"(({R(startState, X, finalState)})+({R(startState, X, r)})({R(r, X, r)})*({R(r, X, finalState)}))"
 
+        return R(list(nfa.startStates)[0], nfa.states, list(nfa.finalStates)[0])
+
     def reverse(self) -> 'NFA':
         reversedNfa = NFA(
             states=self.states,
@@ -125,6 +129,7 @@ class NFA:
         return reversedNfa
 
     def grammar(self) -> 'Grammar':
+        from pykleene.grammar import Grammar
         from pykleene.utils import _getNextLetter
         from copy import deepcopy
         nfa = self.singleStartStateNFA()

@@ -1,5 +1,8 @@
-from nfa import NFA
-from pykleene._helpers import BinaryTreeNode 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pykleene.nfa import NFA
+    from pykleene._helpers import BinaryTreeNode
 
 class RE:
     OPERATORS = ['+', '.', '*']
@@ -44,7 +47,8 @@ class RE:
             postfix.append(stack.pop())
         return ''.join(postfix)
     
-    def expressionTree(regex: str) -> BinaryTreeNode:
+    def expressionTree(regex: str) -> 'BinaryTreeNode':
+        from pykleene._helpers import BinaryTreeNode 
         postfix = RE.postfix(RE.format(regex))
         stack: list[BinaryTreeNode] = []
         for char in postfix: 
@@ -82,9 +86,11 @@ class RE:
                 stack.append(node) 
         return stack.pop()
 
-    def nfa(regex: str, method: str = 'regexTree') -> NFA:
-        from copy import deepcopy
+    def nfa(regex: str, method: str = 'regexTree') -> 'NFA':
+        from pykleene.nfa import NFA
+        from pykleene._helpers import BinaryTreeNode 
         def regexTreeToNfa(node: BinaryTreeNode, cnt: int = 0) -> NFA: 
+            from copy import deepcopy
             leftChild: NFA
             rightChild: NFA
 
@@ -141,6 +147,7 @@ class RE:
                 raise ValueError(f"Invalid operator {node.data}")
 
         def regexPostfixToNfa(postfix: str) -> NFA:
+            from copy import deepcopy
             stack: list[NFA] = []
             cnt: int = 0
             
@@ -162,7 +169,7 @@ class RE:
                     leftNfa = stack.pop()
                     newNfa = deepcopy(leftNfa)
                     newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(leftNfa.finalStates)[0])
-                    newNfa = newNfa._addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                     stack.append(newNfa)
                 
                 elif char == '+':  
