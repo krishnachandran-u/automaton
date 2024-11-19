@@ -1,3 +1,4 @@
+from pykleene.nfa import NFA
 class Grammar:
     nonTerminals: set[str] = set()
     terminals: set[str] = set()
@@ -104,4 +105,73 @@ class Grammar:
             return False 
         return self.isLeftLinear() or self.isRightLinear()
 
-     
+    def _getNewState(self) -> str:
+        cnt = 0
+        while f"q{cnt}" in self.nonTerminals:
+            cnt += 1 
+        return f"q{cnt}"
+
+    def reverse(self) -> 'Grammar':
+        for lhs, productions in self.productions.items():
+            for rhs in productions: 
+                rhs = rhs[::-1]
+        return self
+
+    def nfa(self) -> NFA:
+        def rightLinearToNfa() -> NFA:
+            nfa = NFA(
+                states={self.startSymbol},
+                alphabet=self.terminals,
+                transitions=set(),
+                startStates={self.startSymbol},
+                finalStates=set()
+            )
+
+            cnt = 0
+            for lhs, productions in self.productions.items():
+                for rhs in productions:
+                    if rhs == 'ε':
+                        nfa.finalStates.add(lhs)
+                    elif rhs in self.terminals:
+                        nextState = self._getNewState()
+                        nfa.states.add(nextState)
+                        nfa.addTransition(lhs, rhs, nextState)
+                        nfa.finalStates.add(nextState)
+                    elif rhs in self.nonTerminals:
+                        nextState = rhs
+                        nfa.addTransition(lhs, 'ε', nextState)
+                    else:
+                        currState = lhs
+                        for i, char in enumerate(rhs[:-1]):
+                            if i == len(rhs) - 2 and rhs[i + 1] in self.nonTerminals:
+                                nextState = rhs[i + 1]
+                                nfa.states.add(nextState)
+                                nfa.addTransition(currState, char, nextState)
+                                break
+                            if i == len(rhs) - 1:
+                                nextState = self._getNewState()
+                                nfa.states.add(nextState)
+                                nfa.addTransition(currState, char, nextState)
+                                nfa.finalStates.add(nextState)
+                            else:
+                                nextState = self._getNewState() 
+                                nfa.states.add(nextState)
+                                nfa.addTransition(currState, char, nextState)
+                                currState = nextState
+            return nfa
+
+        def leftLinearToNfa() -> NFA:
+            reversedRightLinearGrammar = self.reverse()
+            reversedGrammarNfa = reversedRightLinearGrammar.nfa()
+            Nfa = reversedGrammarNfa.reverse()
+            return Nfa
+
+        if not self.isRegular():
+            raise ValueError("Grammar is not regular")
+        if self.isLeftLinear():
+            return leftLinearToNfa()     
+        if self.isRightLinear():
+            return rightLinearToNfa()
+        else:
+            raise ValueError("Error in converting grammar to NFA")
+

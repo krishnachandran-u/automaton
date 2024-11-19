@@ -1,3 +1,5 @@
+
+from pykleene.grammar import Grammar
 class NFA:
     states: set[str]
     alphabet: set[str]
@@ -26,7 +28,7 @@ class NFA:
         self.startStates = set(data['startStates'])
         self.finalStates = set(data['finalStates'])
 
-    def _addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
+    def addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
         for (state, sym), nextStates in self.transitions.items():
             if state == startState and sym == symbol:
                 nextStates.add(endState)
@@ -101,4 +103,47 @@ class NFA:
                     transMap[(nextState, symbol)].add(state)
         reversedNfa.transitions = transMap
         return reversedNfa
-            
+
+    def grammar(self) -> 'Grammar':
+        from utils import _getNextLetter
+        from copy import deepcopy
+        nfa = self.singleStartStateNFA()
+        grammar = Grammar(
+            startSymbol=None,
+            terminals=nfa.alphabet,
+            nonTerminals=set(),
+            productions=dict()
+        )
+        stateToSymbol = dict()
+        currSymbol = 'A'
+        for (state, symbol), nextStates in nfa.transitions.items():
+            if state not in stateToSymbol:
+                stateToSymbol[state] = currSymbol
+                currSymbol = _getNextLetter(currSymbol)
+            for nextState in nextStates:
+                if nextState not in stateToSymbol:
+                    stateToSymbol[nextState] = currSymbol
+                    currSymbol = _getNextLetter(currSymbol)
+            for nextState in nextStates:
+                lhs = stateToSymbol[state]
+                rhs = (symbol if symbol != 'ε' else '') + stateToSymbol[nextState]
+             
+                if lhs not in grammar.productions:
+                    grammar.productions[lhs] = set()
+                grammar.productions[lhs].add(rhs)
+
+        for _, value in stateToSymbol.items():
+            grammar.nonTerminals.add(value)
+
+        nfaStartStates = deepcopy(nfa.startStates)
+        grammar.startSymbol = stateToSymbol[nfaStartStates.pop()]
+
+        for state in nfa.finalStates:
+            if stateToSymbol[state] not in grammar.productions: 
+                grammar.productions[stateToSymbol[state]] = set()
+            grammar.productions[stateToSymbol[state]].add('ε')
+
+        return grammar
+
+
+        
