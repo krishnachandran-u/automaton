@@ -1,11 +1,11 @@
 {
     "llg1": {
-        "non_terminals": ["S", "A"],
+        "nonTerminals": ["S", "A"],
         "terminals": ["a", "b", "c"],
         "productions": {
             "S": ["Sa", "Ab"],
             "A": ["Ac", "ε"]
         },
-        "start_symbol": "S"
+        "startSymbol": "S"
     }
 }

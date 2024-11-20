@@ -1,4 +1,7 @@
-/.venv
-/__pycache__
-/tests/images/*
-!/tests/images/.gitkeep
+tests/outputs/*
+!tests/outputs/.gitkeep
+.venv
+__pycache__
+build
+dist
+pykleene.egg-info

@@ -1,11 +1,11 @@
 {
     "a*bc*<rlg>": {
-        "non_terminals": ["S", "A"],
+        "nonTerminals": ["S", "A"],
         "terminals": ["a", "b", "c"],
         "productions": {
             "S": ["aS", "bA"],
             "A": ["cA", "ε"]
         },
-        "start_symbol": "S"
+        "startSymbol": "S"
     }
 }

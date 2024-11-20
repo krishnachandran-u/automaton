@@ -1,6 +1,5 @@
 {
-    "dfa_1": {
-        "name": "DFA 1",
+    "DFA 1": {
         "states": ["A0", "A1", "A2", "A3", "A4", "A5"],
         "alphabet": ["0", "1"],
         "transitions": [
@@ -17,11 +16,10 @@
             ["A5", "0", "A5"],
             ["A5", "1", "A5"]
         ],
-        "start_state": "A0",
-        "final_states": ["A1", "A4", "A2"]
+        "startState": "A0",
+        "finalStates": ["A1", "A4", "A2"]
     },
-    "dfa_2": {
-        "name": "DFA 2",
+    "DFA 2": {
         "states": ["B0", "B1", "B2"],
         "alphabet": ["0", "1"],
         "transitions": [
@@ -32,11 +30,10 @@
             ["B2", "0", "B2"],
             ["B2", "1", "B2"]
         ],
-        "start_state": "B0",
-        "final_states": ["B1"]
+        "startState": "B0",
+        "finalStates": ["B1"]
     },
-    "dfa_3": {
-        "name": "DFA 3",
+    "DFA 3": {
         "states": ["C0", "C1", "C2"],
         "alphabet": ["0", "1"],
         "transitions": [
@@ -47,7 +44,7 @@
             ["C2", "0", "C1"],
             ["C2", "1", "C2"]
         ],
-        "start_state": "C0",
-        "final_states": ["C0"]
-    }
+        "startState": "C0",
+        "finalStates": ["C0"]
+    } 
 }
