@@ -1,28 +1,47 @@
 ---
 title: Installation
-description: Installation guide for our application.
+description: Installation guide for PyKleene - A Python library for automata theory
 ---
 
-To get started with our application, follow these simple steps:
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam iste dolorum tempore consectetur explicabo tempora provident quia maxime, molestiae, facilis aperiam et, error illum vel ullam? Quis architecto dolore ullam
+To get started with PyKleene, follow these simple steps to set up the library in your Python environment.
 
 ## Prerequisites
 
-Before installing our application, make sure you have the following:
-
-- Node.js installed on your machine
+Before installing PyKleene, make sure you have the following:
+- Python 3.8 or higher installed on your machine
+- pip package manager (usually comes with Python)
+- Virtual environment (recommended)
 
 <Note title="Remember" type="danger">
-  Lorem ipsum dolor sit amet consectetur adipisicing elit Numquam iste dolorum
-  tempore consectetur explicabo.
+  PyKleene requires Python 3.8+ due to its dependency on modern Python features.
+  Using older versions may result in compatibility issues or unexpected behavior.
 </Note>
 
 ## Installation Steps
 
+1. Create and activate a virtual environment (recommended):
 ```bash
-git clone https://github.com/your-repo/your-project.git
+python -m venv pykleene-env
+source pykleene-env/bin/activate  # On Windows: pykleene-env\Scripts\activate
+```
+
+2. Install PyKleene using pip:
+```bash
+pip install pykleene
+```
+
+3. For development installation, clone the repository:
+```bash
+git clone https://github.com/your-repo/pykleene.git
+cd pykleene
+pip install -e .
 ```
 
 ## Additional Information
 
 For more detailed instructions and troubleshooting tips, refer to our [documentation](#).
+
+Common installation issues and solutions:
+- If you encounter permission errors, try using `pip install --user pykleene`
+- For system-wide installation (not recommended), use `sudo pip install pykleene`
+- To upgrade an existing installation: `pip install --upgrade pykleene`

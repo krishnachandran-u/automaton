@@ -19,9 +19,9 @@ const codeFont = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AriaDocsLite - Template",
+  title: "PyKleene",
   description:
-    "This comprehensive documentation template, crafted with Next.js and available as open-source, delivers a sleek and responsive design, tailored to meet all your project documentation requirements.",
+    "PYKLEENE is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as Type 0 to Type 3 grammars.",
 };
 
 export default function RootLayout({

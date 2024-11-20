@@ -14,6 +14,8 @@ export const ROUTES: EachRoute[] = [
     noLink: true,
     items: [
       { title: "Introduction", href: "/introduction" },
+      { title: "Installation", href: "/installation" },
+      /*
       {
         title: "Installation",
         href: "/installation",
@@ -23,8 +25,10 @@ export const ROUTES: EachRoute[] = [
           { title: "Gatsby", href: "/gatsby" },
         ],
       },
+      */
     ],
   },
+  /*
   {
     title: "Server Actions",
     href: "/server-actions",
@@ -34,6 +38,7 @@ export const ROUTES: EachRoute[] = [
       { title: "getToken", href: "/getToken" },
     ],
   },
+  */
 ];
 
 type Page = { title: string; href: string };

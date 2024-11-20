@@ -6,15 +6,13 @@ export default function Home() {
   return (
     <div className="flex sm:min-h-[91vh] min-h-[88vh] flex-col items-center justify-center text-center px-2 py-8">
       <h1 className="text-5xl font-bold mb-4 sm:text-7xl">
-        Aria Docs <span className="text-red-700">Lite</span>{" "}
+        <span className="text-red-700">PYKLEENE</span>{" "}
       </h1>
       <h1 className="text-3xl font-bold mb-4 sm:text-5xl">
-        A minimal version of AriaDocs
+        Simulate any automaton, master any grammar.
       </h1>
       <p className="mb-8 sm:text-md max-w-[800px] text-muted-foreground">
-        This feature-packed documentation template, built with Next.js, offers a
-        sleek and responsive design, perfect for all your project documentation
-        needs.
+        PYKLEENE is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as Type 0 to Type 3 grammars. 
       </p>
       <div>
         <Link
