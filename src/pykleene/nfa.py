@@ -3,6 +3,7 @@ import graphviz
 
 if TYPE_CHECKING:
     from pykleene.grammar import Grammar
+    from pykleene.dfa import DFA
 class NFA:
     states: set[str]
     alphabet: set[str]
@@ -59,6 +60,8 @@ class NFA:
         return nfa
 
     def singleStartStateNFA(self) -> 'NFA':
+        if len(self.startStates) == 1:
+            return self
         from copy import deepcopy
         newNfa = deepcopy(self)
         cnt = 0
@@ -73,6 +76,8 @@ class NFA:
 
 
     def singleFinalStateNFA(self) -> 'NFA':
+        if len(self.finalStates) == 1:
+            return self
         from copy import deepcopy
         newNfa = deepcopy(self)
         cnt = 0
@@ -81,7 +86,10 @@ class NFA:
         newFinalState = f"q{cnt}"
         newNfa.states.add(newFinalState)
         for finalState in newNfa.finalStates:
-            newNfa.transitions[(finalState, 'ε')] = {newFinalState}
+            if (finalState, 'ε') in newNfa.transitions:
+                newNfa.transitions[(finalState, 'ε')].add(newFinalState)
+            else: 
+                newNfa.transitions[(finalState, 'ε')] = {newFinalState}
         newNfa.finalStates = {newFinalState}
         return newNfa 
 
@@ -196,3 +204,84 @@ class NFA:
                 print(f"Error while saving image: {e}")
 
         return dot
+
+    def epsilonClosure(self, state: str) -> set[str]:
+        closure = set()
+        closure.add(state)
+        stack = [state]
+        while len(stack) > 0:
+            currentState = stack.pop()
+            for (s, symbol), nextStates in self.transitions.items():
+                if s == currentState and symbol == 'ε':
+                    for nextState in nextStates:
+                        if nextState not in closure:
+                            closure.add(nextState)
+                            stack.append(nextState)
+        return closure
+
+    def nextStates(self, state: str, symbol: str) -> set[str]:
+        for (s, sym), nStates in self.transitions.items():
+            if s == state and sym == symbol:
+                return nStates
+        return set()
+
+    def dfa(self) -> 'DFA':
+        from pykleene.dfa import DFA
+        def closure(state: str, symbol: str) -> set[str]:
+            closure = set()
+
+            closure = closure | self.nextStates(state, symbol)
+
+            for nextState in self.epsilonClosure(state):
+                closure = closure | self.nextStates(nextState, symbol)
+
+            for nextState in self.nextStates(state, symbol):
+                closure = closure | self.epsilonClosure(nextState)
+
+            for nextState in self.epsilonClosure(state):
+                for nextNextState in self.nextStates(nextState, symbol):
+                    closure = closure | self.epsilonClosure(nextNextState)
+
+            return closure
+
+        from pprint import pprint
+        nfa = self.singleStartStateNFA()
+
+        alphabet: set[str] = self.alphabet
+        transitions: dict[tuple[str, str], str] = dict()
+
+        startState = nfa.epsilonClosure(list(nfa.startStates)[0])
+
+        states = set()
+        states.add(str(sorted(startState)))
+        queue: list[set[str]] = [startState]
+
+        startState = str(sorted(startState)) 
+
+        finalStates = set()
+
+        while len(queue) > 0:
+            dfaState = queue.pop()
+            for symbol in alphabet:
+                nextDfaState = set()
+                for state in dfaState:
+                    nextDfaState = nextDfaState | closure(state, symbol)
+                transitions[(str(sorted(dfaState)), symbol)] = str(sorted(nextDfaState))
+                print(f"{str(sorted(dfaState))} --{symbol}--> {str(sorted(nextDfaState))}")
+                if len(dfaState & nfa.finalStates) > 0 and str(sorted(dfaState)) not in finalStates:
+                    finalStates.add(str(sorted(dfaState)))
+                if str(sorted(nextDfaState)) not in states:
+                    queue.append(nextDfaState)
+                    states.add(str(sorted(nextDfaState)))
+
+        dfa = DFA(
+            states=states,
+            alphabet=alphabet,
+            transitions=transitions,
+            startState=startState,
+            finalStates=finalStates
+        )
+
+        # pprint(dfa.__dict__)
+
+        return dfa
