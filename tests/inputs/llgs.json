@@ -1,0 +1,11 @@
+{
+    "llg1": {
+        "nonTerminals": ["S", "A"],
+        "terminals": ["a", "b", "c"],
+        "productions": {
+            "S": ["Sa", "Ab"],
+            "A": ["Ac", "ε"]
+        },
+        "startSymbol": "S"
+    }
+}

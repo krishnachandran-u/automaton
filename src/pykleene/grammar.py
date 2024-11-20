@@ -115,10 +115,15 @@ class Grammar:
         return f"q{cnt}"
 
     def reverse(self) -> 'Grammar':
+        from copy import deepcopy
+        grammar = deepcopy(self)
+        newProductions = dict()
         for lhs, productions in self.productions.items():
-            for rhs in productions: 
-                rhs = rhs[::-1]
-        return self
+            newProductions[lhs] = set()
+            for rhs in productions:
+                newProductions[lhs].add(rhs[::-1])
+        grammar.productions = newProductions
+        return grammar
 
     def nfa(self) -> NFA:
         def rightLinearToNfa() -> NFA:
@@ -178,3 +183,13 @@ class Grammar:
         else:
             raise ValueError("Error in converting grammar to NFA")
 
+    def toRightLinear(self) -> 'Grammar':
+        if not self.isRegular():
+            raise ValueError("Grammar is not regular")
+        if self.isRightLinear():
+            return self
+        if self.isLeftLinear():
+            nfa = self.nfa() 
+            return nfa.grammar()
+        else:
+            raise ValueError("Error in converting grammar to right linear form")
