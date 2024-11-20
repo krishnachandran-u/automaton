@@ -19,7 +19,7 @@ const codeFont = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PyKleene",
+  title: "PYKLEENE",
   description:
     "PYKLEENE is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as Type 0 to Type 3 grammars.",
 };
