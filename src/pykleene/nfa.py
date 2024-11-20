@@ -267,7 +267,7 @@ class NFA:
                 for state in dfaState:
                     nextDfaState = nextDfaState | closure(state, symbol)
                 transitions[(str(sorted(dfaState)), symbol)] = str(sorted(nextDfaState))
-                print(f"{str(sorted(dfaState))} --{symbol}--> {str(sorted(nextDfaState))}")
+                # print(f"{str(sorted(dfaState))} --{symbol}--> {str(sorted(nextDfaState))}")
                 if len(dfaState & nfa.finalStates) > 0 and str(sorted(dfaState)) not in finalStates:
                     finalStates.add(str(sorted(dfaState)))
                 if str(sorted(nextDfaState)) not in states:
