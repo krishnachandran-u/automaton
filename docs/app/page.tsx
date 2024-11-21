@@ -12,7 +12,7 @@ export default function Home() {
         Simulate any automaton, master any grammar.
       </h1>
       <p className="mb-8 sm:text-md max-w-[800px] text-muted-foreground">
-        pykleene is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as regular to unrestricted grammars. 
+        Pykleene is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as regular to unrestricted grammars. 
       </p>
       <div>
         <Link

@@ -1,28 +1,41 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
-// import { Space_Mono, Space_Grotesk } from "next/font/google";
-import { Courier_Prime } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const regularFont = Courier_Prime({
-  subsets: ["latin"],
+const regularFont = localFont({
+  src: [
+    { 
+      path: "./../public/fonts/CourierPrime-Regular.ttf", 
+      weight: "400", 
+      style: "normal" 
+    },
+    { 
+      path: "./../public/fonts/CourierPrime-Italic.ttf", 
+      weight: "400", 
+      style: "italic" 
+    },
+    { 
+      path: "./../public/fonts/CourierPrime-Bold.ttf", 
+      weight: "700", 
+      style: "normal" 
+    },
+    { 
+      path: "./../public/fonts/CourierPrime-BoldItalic.ttf", 
+      weight: "700", 
+      style: "italic" 
+    }
+  ],
   variable: "--font-regular",
-  display: "swap",
-  weight: "400",
 });
 
-const codeFont = Courier_Prime({
-  subsets: ["latin"],
-  variable: "--font-code",
-  display: "swap",
-  weight: "400",
-});
+const codeFont = regularFont;
 
 export const metadata: Metadata = {
-  title: "PYKLEENE",
+  title: "pykleene",
   description:
-    "PYKLEENE is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as Type 0 to Type 3 grammars.",
+    "pykleene is a python library for building and simulating various types of automata and formal grammars, from finite state machines to Turing machines, as well as Type 0 to Type 3 grammars.",
 };
 
 export default function RootLayout({
