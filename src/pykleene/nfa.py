@@ -231,24 +231,15 @@ class NFA:
             closure = set()
 
             closure = closure | nfa.nextStates(state, symbol)
-            # print(f"closure {symbol} :({state}, {symbol}) = {closure}")
 
             for nextState in nfa.epsilonClosure(state):
                 closure = closure | nfa.nextStates(nextState, symbol)
-            # print(f"closure <ε -> {symbol}> :({state}, {symbol}) = {closure}")
 
             for nextState in nfa.nextStates(state, symbol):
                 closure = closure | nfa.epsilonClosure(nextState)
-            # print(f"closure <{symbol} -> ε > :({state}, {symbol}) = {closure}")
 
             for nextState in nfa.epsilonClosure(state):
-                # epsilonClosure.add(nextState)
                 for nextNextState in nfa.nextStates(nextState, symbol):
-                    # nextStates.add(nextNextState)
-                    # nextNextStates = nextNextStates | self.epsilonClosure(nextNextState)
-                    # print(f"nextNextState: {nextNextState} from {state} on {symbol}")
-                    # print(f"epsilonClosure of {nextNextState}: {self.epsilonClosure(nextNextState)}")
-                    # print(f"epsilonClosure of A4: {nfa.epsilonClosure('A4')}")
                     closure = closure | nfa.epsilonClosure(nextNextState)
             
             return closure
@@ -274,17 +265,13 @@ class NFA:
 
         finalStates = set()
 
-        # print(f"epsilonClosure of A4: {nfa.epsilonClosure('A4')}")
-
         while len(queue) > 0:
             dfaState = queue.pop(0)
             for symbol in alphabet:
                 nextDfaState = set()
                 for state in dfaState:
                     nextDfaState = nextDfaState | closure(state, symbol)
-                    # print(f"closure({state}, {symbol}) = {closure(state, symbol)}")
                 transitions[(str(sorted(dfaState)), symbol)] = str(sorted(nextDfaState))
-                # print(f"{str(sorted(dfaState))} --{symbol}--> {str(sorted(nextDfaState))}")
                 if len(dfaState & nfa.finalStates) > 0 and str(sorted(dfaState)) not in finalStates:
                     finalStates.add(str(sorted(dfaState)))
                 if str(sorted(nextDfaState)) not in states:
@@ -298,7 +285,5 @@ class NFA:
             startState=startState,
             finalStates=finalStates
         )
-
-        # pprint(dfa.__dict__)
 
         return dfa
