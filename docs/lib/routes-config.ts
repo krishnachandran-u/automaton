@@ -34,9 +34,7 @@ export const ROUTES: EachRoute[] = [
     noLink: true,
     items: [
       { title: "DFA", href: "/dfa" },
-      /*
-      { title: "getToken", href: "/getToken" },
-       */
+      { title: "NFA", href: "/nfa" },
     ],
   },
 ];

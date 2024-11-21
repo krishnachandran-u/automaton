@@ -13,7 +13,7 @@ if __name__ == '__main__':
     for nfaName, nfaData in NFAs.items():
         nfa = NFA()
         nfa.loadFromJSONDict(nfaData)
-        print(nfa.__dict__)
+        # print(nfa.__dict__)
         nfa.image(dir=OUTPUTDIR(), save=True)
         NFAs[nfaName] = nfa 
 
