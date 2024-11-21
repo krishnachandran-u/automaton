@@ -28,17 +28,17 @@ export const ROUTES: EachRoute[] = [
       */
     ],
   },
-  /*
   {
-    title: "Server Actions",
-    href: "/server-actions",
+    title: "State Machines",
+    href: "/state-machines",
     noLink: true,
     items: [
-      { title: "getSession", href: "/getSession" },
+      { title: "DFA", href: "/dfa" },
+      /*
       { title: "getToken", href: "/getToken" },
+       */
     ],
   },
-  */
 ];
 
 type Page = { title: string; href: string };
