@@ -208,15 +208,15 @@ class NFA:
     def epsilonClosure(self, state: str) -> set[str]:
         closure = set()
         closure.add(state)
-        stack = [state]
-        while len(stack) > 0:
-            currentState = stack.pop()
+        queue = [state]
+        while len(queue) > 0:
+            currentState = queue.pop(0)
             for (s, symbol), nextStates in self.transitions.items():
                 if s == currentState and symbol == 'ε':
                     for nextState in nextStates:
                         if nextState not in closure:
                             closure.add(nextState)
-                            stack.append(nextState)
+                            queue.append(nextState)
         return closure
 
     def nextStates(self, state: str, symbol: str) -> set[str]:
@@ -230,22 +230,36 @@ class NFA:
         def closure(state: str, symbol: str) -> set[str]:
             closure = set()
 
-            closure = closure | self.nextStates(state, symbol)
+            closure = closure | nfa.nextStates(state, symbol)
+            # print(f"closure {symbol} :({state}, {symbol}) = {closure}")
 
-            for nextState in self.epsilonClosure(state):
-                closure = closure | self.nextStates(nextState, symbol)
+            for nextState in nfa.epsilonClosure(state):
+                closure = closure | nfa.nextStates(nextState, symbol)
+            # print(f"closure <ε -> {symbol}> :({state}, {symbol}) = {closure}")
 
-            for nextState in self.nextStates(state, symbol):
-                closure = closure | self.epsilonClosure(nextState)
+            for nextState in nfa.nextStates(state, symbol):
+                closure = closure | nfa.epsilonClosure(nextState)
+            # print(f"closure <{symbol} -> ε > :({state}, {symbol}) = {closure}")
 
-            for nextState in self.epsilonClosure(state):
-                for nextNextState in self.nextStates(nextState, symbol):
-                    closure = closure | self.epsilonClosure(nextNextState)
-
+            for nextState in nfa.epsilonClosure(state):
+                # epsilonClosure.add(nextState)
+                for nextNextState in nfa.nextStates(nextState, symbol):
+                    # nextStates.add(nextNextState)
+                    # nextNextStates = nextNextStates | self.epsilonClosure(nextNextState)
+                    # print(f"nextNextState: {nextNextState} from {state} on {symbol}")
+                    # print(f"epsilonClosure of {nextNextState}: {self.epsilonClosure(nextNextState)}")
+                    # print(f"epsilonClosure of A4: {nfa.epsilonClosure('A4')}")
+                    closure = closure | nfa.epsilonClosure(nextNextState)
+            
             return closure
 
         from pprint import pprint
         nfa = self.singleStartStateNFA()
+        nfa = nfa.singleFinalStateNFA()
+
+        nfa.image().view()
+
+        pprint(nfa.__dict__)
 
         alphabet: set[str] = self.alphabet
         transitions: dict[tuple[str, str], str] = dict()
@@ -260,12 +274,15 @@ class NFA:
 
         finalStates = set()
 
+        # print(f"epsilonClosure of A4: {nfa.epsilonClosure('A4')}")
+
         while len(queue) > 0:
-            dfaState = queue.pop()
+            dfaState = queue.pop(0)
             for symbol in alphabet:
                 nextDfaState = set()
                 for state in dfaState:
                     nextDfaState = nextDfaState | closure(state, symbol)
+                    # print(f"closure({state}, {symbol}) = {closure(state, symbol)}")
                 transitions[(str(sorted(dfaState)), symbol)] = str(sorted(nextDfaState))
                 # print(f"{str(sorted(dfaState))} --{symbol}--> {str(sorted(nextDfaState))}")
                 if len(dfaState & nfa.finalStates) > 0 and str(sorted(dfaState)) not in finalStates:
