@@ -11,6 +11,7 @@ Before installing pykleene, make sure you have the following:
 - Python 3.8 or higher installed on your machine
 - pip package manager (usually comes with Python)
 - Virtual environment (recommended)
+- Graphviz (for visualizing automata)
 
 <Note title="Remember" type="danger">
   pykleene requires Python 3.8+ due to its dependency on modern Python features.
@@ -19,18 +20,22 @@ Before installing pykleene, make sure you have the following:
 
 ## Installation Steps
 
-1. Create and activate a virtual environment (recommended):
+1. Install Graphviz:  
+Before proceeding with the installation of pykleene, make sure you have Graphviz installed on your system. Graphviz is required for visualizing automata.  
+You can download and install Graphviz from [Graphviz's official website](https://graphviz.org/download/). 
+
+2. Create and activate a virtual environment (recommended):
 ```bash
 python -m venv pykleene-env
 source pykleene-env/bin/activate  # On Windows: pykleene-env\Scripts\activate
 ```
 
-2. Install pykleene using pip:
+3. Install pykleene using pip:
 ```bash
 pip install pykleene
 ```
 
-3. For development installation, clone the repository:
+4. For development installation, clone the repository:
 ```bash
 git clone https://github.com/your-repo/pykleene.git
 cd pykleene
