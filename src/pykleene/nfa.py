@@ -27,27 +27,38 @@ class NFA:
         for (state, symbol), nextStates in self.transitions.items():
             if state not in self.states:
                 return False
-            if symbol not in self.alphabet:
+            if symbol not in self.alphabet and symbol != 'ε':
                 return False
             for nextState in nextStates:
                 if nextState not in self.states:
                     return False
-        for startState in self.startStates:
-            if startState not in self.states:
-                return False
-        for finalState in self.finalStates:
-            if finalState not in self.states:
-                return False
+        if not self.startStates.issubset(self.states):
+            return False
+        if not self.finalStates.issubset(self.states):
+            return False 
         return True
 
     def loadFromJSONDict(self, data: dict):
-        self.states = set(data['states'])
-        self.alphabet = set(data['alphabet'])
-        self.transitions = dict()
-        for transition in data['transitions']:
-            self.transitions[(transition[0], transition[1])] = set(transition[2])
-        self.startStates = set(data['startStates'])
-        self.finalStates = set(data['finalStates'])
+        nfa = NFA()
+        try:
+            nfa.states = set(data['states'])
+            nfa.alphabet = set(data['alphabet'])
+            nfa.transitions = dict()
+            for transition in data['transitions']:
+                nfa.transitions[(transition[0], transition[1])] = set(transition[2])
+            nfa.startStates = set(data['startStates'])
+            nfa.finalStates = set(data['finalStates'])
+
+            if nfa.isValid():
+                self.states = nfa.states
+                self.alphabet = nfa.alphabet
+                self.transitions = nfa.transitions
+                self.startStates = nfa.startStates
+                self.finalStates = nfa.finalStates
+            else:
+                raise Exception("Invalid NFA")
+        except Exception as e:
+            print(f"Error while loading NFA from JSON dict: {e}")
 
     def addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
         from copy import deepcopy
@@ -248,9 +259,9 @@ class NFA:
         nfa = self.singleStartStateNFA()
         nfa = nfa.singleFinalStateNFA()
 
-        nfa.image().view()
+        # nfa.image().view()
 
-        pprint(nfa.__dict__)
+        # pprint(nfa.__dict__)
 
         alphabet: set[str] = self.alphabet
         transitions: dict[tuple[str, str], str] = dict()

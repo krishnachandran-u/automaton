@@ -11,10 +11,11 @@ if __name__ == '__main__':
         NFAs = json.load(file)
 
     for nfaName, nfaData in NFAs.items():
-        dfa = NFA()
-        dfa.loadFromJSONDict(nfaData)
-        dfa.image(dir=OUTPUTDIR(), save=True)
-        NFAs[nfaName] = dfa
+        nfa = NFA()
+        nfa.loadFromJSONDict(nfaData)
+        print(nfa.__dict__)
+        nfa.image(dir=OUTPUTDIR(), save=True)
+        NFAs[nfaName] = nfa 
 
     for nfaName, nfa in NFAs.items():
         nfa.image(dir=OUTPUTDIR(), save=True)
