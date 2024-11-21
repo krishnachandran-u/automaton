@@ -283,3 +283,9 @@ class DFA:
         minimalIntersectionDfa = intersectionDfa.minimal()
         minSelf = self.minimal()
         return minSelf.isomorphic(minimalIntersectionDfa)
+
+    def difference(self, dfa: 'DFA') -> 'DFA':
+        return self.intersection(dfa.complement())
+
+    def symmetricDifference(self, dfa: 'DFA') -> 'DFA':
+        return self.union(dfa).difference(self.intersection(dfa))
