@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Courier_Prime } from "next/font/google";
 
 const regularFont = localFont({
   src: [
@@ -30,7 +31,13 @@ const regularFont = localFont({
   variable: "--font-regular",
 });
 
-const codeFont = regularFont;
+const codeFont = Courier_Prime({
+  subsets: ["latin"],
+  variable: "--font-code",
+  display: "swap",
+  weight: ["400", "700"],
+});
+
 
 export const metadata: Metadata = {
   title: "pykleene",
