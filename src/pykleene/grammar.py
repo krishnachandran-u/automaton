@@ -269,7 +269,7 @@ class Grammar:
                         return False
         return True
 
-    def isChomskyNormalForm(self) -> bool:
+    def inCNF(self) -> bool:
         if not self.isContextFree():
             return False
         for _, productions in self.productions.items():
@@ -286,7 +286,7 @@ class Grammar:
 
         return True
 
-    def isGreibachNormalForm(self) -> bool:
+    def inGNF(self) -> bool:
         if not self.isContextFree():
             return False
         for _, productions in self.productions.items():

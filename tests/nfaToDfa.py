@@ -2,7 +2,6 @@ from pykleene.nfa import NFA
 from typing import Dict
 from config import INPUTPATH, OUTPUTDIR
 import json
-import pprint
 
 FILENAME = 'nfas.json'
 
