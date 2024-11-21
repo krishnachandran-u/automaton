@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
-import { Space_Mono, Space_Grotesk } from "next/font/google";
+// import { Space_Mono, Space_Grotesk } from "next/font/google";
+import { Courier_Prime } from "next/font/google";
 import "./globals.css";
 
-const regularFont = Space_Grotesk({
+const regularFont = Courier_Prime({
   subsets: ["latin"],
   variable: "--font-regular",
   display: "swap",
   weight: "400",
 });
 
-const codeFont = Space_Mono({
+const codeFont = Courier_Prime({
   subsets: ["latin"],
   variable: "--font-code",
   display: "swap",

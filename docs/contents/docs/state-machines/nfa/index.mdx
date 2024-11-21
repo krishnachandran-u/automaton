@@ -1,0 +1,130 @@
+---
+title: NFA
+description: Nondeterministic Finite Automaton (NFA) class in pykleene 
+---
+
+```python showLineNumbers
+states: set[str]
+alphabet: set[str]
+transitions: dict[tuple[str, str], set[str]]
+startStates: set[str]
+finalStates: set[str]
+```
+
+## CONSTRUCTOR 
+Initialize a new Nondeterministic Finite Automaton with specified parameters.
+#### Parameters
+- `states`: Set of states in the NFA
+- `alphabet`: Set of input symbols 
+- `transitions`: Mapping of state-symbol pairs to sets of next states
+- `startStates`: Set of initial states of the NFA
+- `finalStates`: Set of accepting states
+#### Return Value
+Creates a new NFA object with specified configuration
+
+## loadFromJSONDict
+Load NFA configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "NFA_NAME": {
+        "states": ["A0", "A1", "A2", "A3", "A4"],
+        "alphabet": ["a", "b"],
+        "transitions": [
+            ["A0", "ε", ["A1", "A3"]],
+            ["A1", "a", ["A2"]],
+            ["A2", "a", ["A2"]],
+            ["A2", "b", ["A2"]],
+            ["A3", "a", ["A3"]],
+            ["A3", "b", ["A3", "A4"]]
+        ],
+        "startStates": ["A0"],
+        "finalStates": ["A2", "A4"]
+    }
+}
+```
+#### Parameters
+- `data`: Dictionary containing NFA configuration
+#### Return Value
+Populates the NFA object with configuration from the dictionary
+
+## isValid
+Validate the NFA configuration.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the NFA configuration is valid
+
+## addTransition
+Add a new transition to the NFA.
+#### Parameters
+- `startState`: Source state of the transition
+- `symbol`: Input symbol for the transition
+- `endState`: Destination state of the transition
+#### Return Value
+A new NFA with the added transition
+
+## singleStartStateNFA
+Convert the NFA to have a single start state.
+#### Parameters
+None
+#### Return Value
+A new NFA with a single start state
+
+## singleFinalStateNFA
+Convert the NFA to have a single final state.
+#### Parameters
+None
+#### Return Value
+A new NFA with a single final state
+
+## regex
+Generate a regular expression equivalent to the NFA.
+#### Parameters
+None
+#### Return Value
+String representing the regular expression of the NFA
+
+## reverse
+Create a reversed version of the NFA.
+#### Parameters
+None
+#### Return Value
+A new NFA with reversed transitions and start/final states swapped
+
+## grammar
+Convert the NFA to an equivalent grammar.
+#### Parameters
+None
+#### Return Value
+A Grammar object representing the language of the NFA
+
+## image
+Generate a graphical representation of the NFA.
+#### Parameters
+-  `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved
+#### Return Value
+Graphviz Digraph object representing the NFA
+
+## epsilonClosure
+Compute the epsilon closure of a given state.
+#### Parameters
+- `state`: State to compute epsilon closure for
+#### Return Value
+Set of states reachable through epsilon transitions
+
+## nextStates
+Compute states reachable from a given state with a specific symbol.
+#### Parameters
+- `state`: Source state
+- `symbol`: Input symbol
+#### Return Value
+Set of states reachable from the source state with the given symbol
+
+## dfa
+Convert the NFA to an equivalent Deterministic Finite Automaton (DFA).
+#### Parameters
+None
+#### Return Value
+A DFA object equivalent to the original NFA

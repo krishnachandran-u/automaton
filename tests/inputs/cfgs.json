@@ -1,0 +1,35 @@
+{
+    "a^nb^m:m!=n": {
+        "nonTerminals": ["S", "T", "U", "V"],
+        "terminals": ["a", "b"],
+        "productions": {
+            "S": ["T", "U"],
+            "T": ["VaT", "VaV", "TaV"],
+            "U": ["VbU", "VbV", "UbV"],
+            "V": ["aVbV", "bVaV", "ε"]
+        },
+        "startSymbol": "S"
+    },
+    "chomsky_1": {
+        "nonTerminals": ["S", "A", "B", "C"],
+        "terminals": ["a", "b"],
+        "productions": {
+            "S": ["AB", "BC"],
+            "A": ["BA", "a"],
+            "B": ["CC", "b"],
+            "C": ["AB", "a"]
+        },
+        "startSymbol": "S"
+    },
+    "greibach_1": {
+        "nonTerminals": ["S", "A", "B", "C"],
+        "terminals": ["a", "b"],
+        "productions": {
+            "S": ["aAB", "bBC"],
+            "A": ["aBA", "a"],
+            "B": ["bCC", "b"],
+            "C": ["aAB", "a"]
+        },
+        "startSymbol": "S"
+    }
+}

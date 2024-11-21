@@ -20,13 +20,37 @@ class DFA:
 
     def loadFromJSONDict(self, data: dict):
         try:
-            self.states = set(data['states'])
-            self.alphabet = set(data['alphabet'])
-            self.transitions = {tuple(transition[:2]): transition[2] for transition in data["transitions"]} 
-            self.startState = data['startState']
-            self.finalStates = set(data['finalStates'])
+            dfa = DFA()
+            dfa.states = set(data['states'])
+            dfa.alphabet = set(data['alphabet'])
+            dfa.transitions = {tuple(transition[:2]): transition[2] for transition in data["transitions"]} 
+            dfa.startState = data['startState']
+            dfa.finalStates = set(data['finalStates'])
+
+            if dfa.isValid():
+                self.states = dfa.states
+                self.alphabet = dfa.alphabet
+                self.transitions = dfa.transitions
+                self.startState = dfa.startState
+                self.finalStates = dfa.finalStates
+            else:
+                raise Exception("Invalid DFA")
         except Exception as e:
             print(f"Error while loading DFA from JSON: {e}")
+    def isValid(self) -> bool:
+        if self.startState not in self.states:
+            return False
+        if not self.finalStates.issubset(self.states):
+            return False
+        for state in self.states:
+            for symbol in self.alphabet:
+                if (state, symbol) not in self.transitions:
+                    return False
+                if self.transitions[(state, symbol)] not in self.states:
+                    return False
+        if len(self.transitions) != len(self.states) * len(self.alphabet):
+            return False
+        return True
 
     def __str__(self):
         states = ", ".join(self.states)
@@ -283,3 +307,10 @@ class DFA:
         minimalIntersectionDfa = intersectionDfa.minimal()
         minSelf = self.minimal()
         return minSelf.isomorphic(minimalIntersectionDfa)
+
+    def difference(self, dfa: 'DFA') -> 'DFA':
+        return self.intersection(dfa.complement())
+
+    def symmetricDifference(self, dfa: 'DFA') -> 'DFA':
+        return self.union(dfa).difference(self.intersection(dfa))
+

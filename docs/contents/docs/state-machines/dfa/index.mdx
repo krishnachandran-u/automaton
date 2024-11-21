@@ -1,0 +1,168 @@
+---
+title: DFA
+description: Deterministic Finite Automaton (DFA) class in pykleene 
+---
+
+```python showLineNumbers
+states: set[str]
+alphabet: set[str]
+transitions: dict[tuple[str, str], str]
+startState: str
+finalStates: set[str]
+```
+
+## CONSTRUCTOR 
+Initialize a new Deterministic Finite Automaton with specified parameters.
+
+#### Parameters
+- `states`: Set of states in the DFA
+- `alphabet`: Set of input symbols
+- `transitions`: Mapping of state-symbol pairs to next states
+- `startState`: Initial state of the DFA
+- `finalStates`: Set of accepting states
+
+#### Return Value
+Creates a new DFA object with specified configuration
+
+## loadFromJSONDict
+Load DFA configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "DFA_NAME": {
+        "states": ["A0", "A1", "A2", "A3", "A4", "A5"],
+        "alphabet": ["0", "1"],
+        "transitions": [
+            ["A0", "0", "A3"],
+            ["A0", "1", "A1"],
+            ["A1", "0", "A2"],
+            ["A1", "1", "A5"],
+            ["A2", "0", "A2"],
+            ["A2", "1", "A5"],
+            ["A3", "0", "A0"],
+            ["A3", "1", "A4"],
+            ["A4", "0", "A2"],
+            ["A4", "1", "A5"],
+            ["A5", "0", "A5"],
+            ["A5", "1", "A5"]
+        ],
+        "startState": "A0",
+        "finalStates": ["A1", "A4", "A2"]
+    },
+}
+```
+#### Parameters
+- `data`: Dictionary containing DFA configuration
+
+#### Return Value
+Populates the DFA object with configuration from the dictionary
+
+## accepts
+Determine if a given string is accepted by the DFA.
+
+#### Parameters
+- `string`: Input string to be processed
+
+#### Return Value
+Boolean indicating whether the string is accepted by the DFA
+
+## nextState
+Compute the next state for a given current state and input symbol.
+
+#### Parameters
+- `currentState`: Current state in the DFA
+- `symbol`: Input symbol
+
+#### Return Value
+Next state after processing the symbol, or None if no transition exists
+
+## minimal
+Generate a minimized equivalent DFA.
+
+#### Parameters
+None
+
+#### Return Value
+A new, minimized DFA with equivalent language
+
+## isomorphic
+Check structural equivalence between two DFAs.
+
+#### Parameters
+- `dfa`: Another DFA to compare
+
+#### Return Value
+Boolean indicating whether the DFAs are isomorphic
+
+## image
+Generate a graphical representation of the DFA.
+
+#### Parameters
+- `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved
+
+#### Return Value
+Graphviz Digraph object representing the DFA
+
+## union
+Compute the union of two DFAs.
+
+#### Parameters
+- `dfa`: Another DFA to combine
+
+#### Return Value
+A new DFA representing the union of the two input DFAs
+
+## complement
+Generate the complement of the current DFA.
+
+#### Parameters
+None
+
+#### Return Value
+A new DFA that accepts strings not in the original DFA's language
+
+## intersection
+Compute the intersection of two DFAs.
+
+#### Parameters
+- `dfa`: Another DFA to intersect with
+
+#### Return Value
+A new DFA representing the intersection of the two input DFAs
+
+## reachable
+Generate a DFA containing only reachable states.
+
+#### Parameters
+None
+
+#### Return Value
+A new DFA with only reachable states from the start state
+
+## isLangSubset
+Check if the current DFA's language is a subset of another DFA's language.
+
+#### Parameters
+- `dfa`: Another DFA to compare
+
+#### Return Value
+Boolean indicating language subset relationship
+
+## difference
+Compute the difference between two DFAs.
+
+#### Parameters
+- `dfa`: Another DFA to subtract
+
+#### Return Value
+A new DFA representing the difference of the two input DFAs
+
+## symmetricDifference
+Compute the symmetric difference between two DFAs.
+
+#### Parameters
+- `dfa`: Another DFA to compute symmetric difference with
+
+#### Return Value
+A new DFA representing the symmetric difference of the two input DFAs

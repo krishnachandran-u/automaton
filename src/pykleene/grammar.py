@@ -44,14 +44,13 @@ class Grammar:
         for terminal in self.terminals:
             if len(terminal) > 1:
                 return False
+        if len(self.terminals & self.nonTerminals) > 0:
+            return False
         if self.startSymbol not in self.nonTerminals:
             return False 
-        startSymbolFound = False
         for lhs, productions in self.productions.items():
             if len(lhs) == 0:
                 return False
-            if lhs == self.startSymbol:
-                startSymbolFound = True
             for char in lhs:
                 if char not in self.nonTerminals and char not in self.terminals:
                     return False
@@ -63,8 +62,6 @@ class Grammar:
                 for char in rhs:
                     if char not in self.terminals and char not in self.nonTerminals:
                         return False
-        if not startSymbolFound:
-            return False
         return True
 
     def isLeftLinear(self) -> bool:
@@ -103,6 +100,7 @@ class Grammar:
                     if char not in self.terminals:
                         return False
         return True
+
     def isRegular(self) -> bool:
         if not self.isValid():
             return False 
@@ -193,3 +191,117 @@ class Grammar:
             return nfa.grammar()
         else:
             raise ValueError("Error in converting grammar to right linear form")
+
+    def toLeftLinear(self) -> 'Grammar':
+        if not self.isRegular():
+            raise ValueError("Grammar is not regular")
+        if self.isLeftLinear():
+            return self
+        if self.isRightLinear():
+            nfa = self.nfa()
+            reversedNfa = nfa.reverse()
+            reversedRightLinearGrammar = reversedNfa.grammar()
+            leftLinearGrammar = reversedRightLinearGrammar.reverse()
+            return leftLinearGrammar
+
+    def isContextFree(self) -> bool:
+        if not self.isValid():
+            return False
+        for lhs, productions in self.productions.items():
+            if len(lhs) != 1 or lhs not in self.nonTerminals:
+                return False
+            for rhs in productions:
+                if len(rhs) == 0:
+                    return False
+                if rhs == 'ε':
+                    continue
+                for char in rhs:
+                    if char not in self.terminals and char not in self.nonTerminals:
+                        return False
+        return True
+
+    def isContextSensitive(self) -> bool:
+        if not self.isValid():
+            return False
+
+        lhsInEpsilonProduction = False
+        for lhs, productions in self.productions.items():
+            if len(lhs) > len(productions) or len(lhs) == 0:
+                return False
+            for char in lhs:
+                if char not in self.nonTerminals and char not in self.terminals:
+                    return False
+            for rhs in productions:
+                if len(rhs) == 0:
+                    return False
+                if rhs == 'ε':
+                    if lhsInEpsilonProduction or lhs != self.startSymbol:
+                        return False
+                    lhsInEpsilonProduction = True
+                for char in rhs:
+                    if char not in self.nonTerminals and char not in self.terminals:
+                        return False 
+
+        if lhsInEpsilonProduction:
+            for lhs, productions in self.productions.items():
+                for rhs in productions:
+                    if self.startSymbol in rhs:
+                        return False
+
+        return True
+
+    def isUnrestricted(self) -> bool:
+        if not self.isValid():
+            return False
+        for lhs, productions in self.productions.items():
+            if len(lhs) == 0:
+                return False
+            for char in lhs:
+                if char not in self.nonTerminals and char not in self.terminals:
+                    return False
+            for rhs in productions:
+                if len(rhs) == 0:
+                    return False
+                if rhs == 'ε':
+                    continue
+                for char in rhs:
+                    if char not in self.nonTerminals and char not in self.terminals:
+                        return False
+        return True
+
+    def inCNF(self) -> bool:
+        if not self.isContextFree():
+            return False
+        for _, productions in self.productions.items():
+            for rhs in productions:
+                if len(rhs) == 0:
+                    return False
+                if rhs == 'ε':
+                    continue
+                if len(rhs) == 1 and rhs in self.terminals:
+                    continue
+                if len(rhs) == 2 and rhs[0] in self.nonTerminals and rhs[1] in self.nonTerminals:
+                    continue
+                return False
+
+        return True
+
+    def inGNF(self) -> bool:
+        if not self.isContextFree():
+            return False
+        for _, productions in self.productions.items():
+            for rhs in productions:
+                if len(rhs) == 0:
+                    return False
+                if rhs == 'ε':
+                    continue
+                if len(rhs) == 1 and rhs not in self.terminals:
+                    return False
+                if len(rhs) > 1:
+                    if rhs[0] not in self.terminals:
+                        return False
+                    for char in rhs[1:]:
+                        if char not in self.nonTerminals:
+                            return False
+
+        return True

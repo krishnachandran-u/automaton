@@ -4,7 +4,7 @@ import Link from "next/link";
 import clsx from "clsx";
 
 export default async function Toc({ path }: { path: string }) {
-  const tocs = await getDocsTocs(path);
+  const tocs = await getDocsTocs(path).then((tocs) => tocs.filter((toc) => toc.level <= 2));
 
   return (
     <div className="lg:flex hidden toc flex-[1] min-w-[230px] py-8 sticky top-16 h-[95.95vh]">

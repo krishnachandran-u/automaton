@@ -3,6 +3,7 @@ import graphviz
 
 if TYPE_CHECKING:
     from pykleene.grammar import Grammar
+    from pykleene.dfa import DFA
 class NFA:
     states: set[str]
     alphabet: set[str]
@@ -26,27 +27,38 @@ class NFA:
         for (state, symbol), nextStates in self.transitions.items():
             if state not in self.states:
                 return False
-            if symbol not in self.alphabet:
+            if symbol not in self.alphabet and symbol != 'ε':
                 return False
             for nextState in nextStates:
                 if nextState not in self.states:
                     return False
-        for startState in self.startStates:
-            if startState not in self.states:
-                return False
-        for finalState in self.finalStates:
-            if finalState not in self.states:
-                return False
+        if not self.startStates.issubset(self.states):
+            return False
+        if not self.finalStates.issubset(self.states):
+            return False 
         return True
 
     def loadFromJSONDict(self, data: dict):
-        self.states = set(data['states'])
-        self.alphabet = set(data['alphabet'])
-        self.transitions = dict()
-        for transition in data['transitions']:
-            self.transitions[(transition[0], transition[1])] = set(transition[2])
-        self.startStates = set(data['startStates'])
-        self.finalStates = set(data['finalStates'])
+        nfa = NFA()
+        try:
+            nfa.states = set(data['states'])
+            nfa.alphabet = set(data['alphabet'])
+            nfa.transitions = dict()
+            for transition in data['transitions']:
+                nfa.transitions[(transition[0], transition[1])] = set(transition[2])
+            nfa.startStates = set(data['startStates'])
+            nfa.finalStates = set(data['finalStates'])
+
+            if nfa.isValid():
+                self.states = nfa.states
+                self.alphabet = nfa.alphabet
+                self.transitions = nfa.transitions
+                self.startStates = nfa.startStates
+                self.finalStates = nfa.finalStates
+            else:
+                raise Exception("Invalid NFA")
+        except Exception as e:
+            print(f"Error while loading NFA from JSON dict: {e}")
 
     def addTransition(self, startState: str, symbol: str, endState: str) -> 'NFA':
         from copy import deepcopy
@@ -59,6 +71,8 @@ class NFA:
         return nfa
 
     def singleStartStateNFA(self) -> 'NFA':
+        if len(self.startStates) == 1:
+            return self
         from copy import deepcopy
         newNfa = deepcopy(self)
         cnt = 0
@@ -73,6 +87,8 @@ class NFA:
 
 
     def singleFinalStateNFA(self) -> 'NFA':
+        if len(self.finalStates) == 1:
+            return self
         from copy import deepcopy
         newNfa = deepcopy(self)
         cnt = 0
@@ -81,7 +97,10 @@ class NFA:
         newFinalState = f"q{cnt}"
         newNfa.states.add(newFinalState)
         for finalState in newNfa.finalStates:
-            newNfa.transitions[(finalState, 'ε')] = {newFinalState}
+            if (finalState, 'ε') in newNfa.transitions:
+                newNfa.transitions[(finalState, 'ε')].add(newFinalState)
+            else: 
+                newNfa.transitions[(finalState, 'ε')] = {newFinalState}
         newNfa.finalStates = {newFinalState}
         return newNfa 
 
@@ -196,3 +215,86 @@ class NFA:
                 print(f"Error while saving image: {e}")
 
         return dot
+
+    def epsilonClosure(self, state: str) -> set[str]:
+        closure = set()
+        closure.add(state)
+        queue = [state]
+        while len(queue) > 0:
+            currentState = queue.pop(0)
+            for (s, symbol), nextStates in self.transitions.items():
+                if s == currentState and symbol == 'ε':
+                    for nextState in nextStates:
+                        if nextState not in closure:
+                            closure.add(nextState)
+                            queue.append(nextState)
+        return closure
+
+    def nextStates(self, state: str, symbol: str) -> set[str]:
+        for (s, sym), nStates in self.transitions.items():
+            if s == state and sym == symbol:
+                return nStates
+        return set()
+
+    def dfa(self) -> 'DFA':
+        from pykleene.dfa import DFA
+        def closure(state: str, symbol: str) -> set[str]:
+            closure = set()
+
+            closure = closure | nfa.nextStates(state, symbol)
+
+            for nextState in nfa.epsilonClosure(state):
+                closure = closure | nfa.nextStates(nextState, symbol)
+
+            for nextState in nfa.nextStates(state, symbol):
+                closure = closure | nfa.epsilonClosure(nextState)
+
+            for nextState in nfa.epsilonClosure(state):
+                for nextNextState in nfa.nextStates(nextState, symbol):
+                    closure = closure | nfa.epsilonClosure(nextNextState)
+            
+            return closure
+
+        from pprint import pprint
+        nfa = self.singleStartStateNFA()
+        nfa = nfa.singleFinalStateNFA()
+
+        # nfa.image().view()
+
+        # pprint(nfa.__dict__)
+
+        alphabet: set[str] = self.alphabet
+        transitions: dict[tuple[str, str], str] = dict()
+
+        startState = nfa.epsilonClosure(list(nfa.startStates)[0])
+
+        states = set()
+        states.add(str(sorted(startState)))
+        queue: list[set[str]] = [startState]
+
+        startState = str(sorted(startState)) 
+
+        finalStates = set()
+
+        while len(queue) > 0:
+            dfaState = queue.pop(0)
+            for symbol in alphabet:
+                nextDfaState = set()
+                for state in dfaState:
+                    nextDfaState = nextDfaState | closure(state, symbol)
+                transitions[(str(sorted(dfaState)), symbol)] = str(sorted(nextDfaState))
+                if len(dfaState & nfa.finalStates) > 0 and str(sorted(dfaState)) not in finalStates:
+                    finalStates.add(str(sorted(dfaState)))
+                if str(sorted(nextDfaState)) not in states:
+                    queue.append(nextDfaState)
+                    states.add(str(sorted(nextDfaState)))
+
+        dfa = DFA(
+            states=states,
+            alphabet=alphabet,
+            transitions=transitions,
+            startState=startState,
+            finalStates=finalStates
+        )
+
+        return dfa
