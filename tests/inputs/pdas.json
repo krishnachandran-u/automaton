@@ -1,0 +1,17 @@
+{
+    "PDA_NAME": {
+        "states": ["q0", "q1", "q2"],
+        "inputAlphabet": ["a", "b"],
+        "stackAlphabet": ["A", "B", "⊢"],
+        "transitions": [
+            ["q0", "a", "⊢", "q0", "A⊢"],
+            ["q0", "a", "A", "q0", "AA"],
+            ["q0", "b", "A", "q1", "ε"],
+            ["q1", "b", "A", "q1", "ε"],
+            ["q1", "ε", "⊢", "q2", "⊢"] 
+        ],
+        "startState": "q0",
+        "initialStackSymbol": "⊢",
+        "finalStates": ["q2"]
+    }
+}
