@@ -38,6 +38,22 @@ class NFA:
             return False 
         return True
 
+    def accepts(self, string: str = None) -> bool:
+        def run(state: str, string: str) -> bool:
+            if len(string) == 0:
+                return state in self.finalStates
+            for nextState in self.epsilonClosure(state):
+                for nextNextState in self.nextStates(nextState, string[0]):
+                    if run(nextNextState, string[1:]):
+                        return True
+            return False
+
+        for startState in self.startStates:
+            if run(startState, string):
+                return True
+
+        return False
+
     def loadFromJSONDict(self, data: dict):
         nfa = NFA()
         try:

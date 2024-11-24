@@ -37,6 +37,7 @@ class DFA:
                 raise Exception("Invalid DFA")
         except Exception as e:
             print(f"Error while loading DFA from JSON: {e}")
+
     def isValid(self) -> bool:
         if self.startState not in self.states:
             return False
@@ -61,11 +62,11 @@ class DFA:
         
         return f"Q = {{{states}}}\n\nΣ = {{{alphabet}}}\n\n{{{transitions}}}\n\ns = {startState}\n\nF = {{{finalStates}}}"
 
-    def accepts(self, string: str) -> bool:
+    def accepts(self, string: str = None, verbose: str = False) -> bool:
         currentState = self.startState
         for symbol in string:
             currentState = self.transitions[(currentState, symbol)]
-            # print(currentState)
+            print(f"({currentState}, {symbol}) -> {self.transitions[(currentState, symbol)]}") if verbose else None
         return currentState in self.finalStates
 
     def nextState(self, currentState: str, symbol: str) -> str:
