@@ -104,13 +104,38 @@ class PDA:
         
     def isDeterministic(self) -> bool:
         for state in self.states:
-            for inputSymbol in self.inputAlphabet:
-                for stackSymbol in self.stackAlphabet:
-                    nextConfigs = set()
+            for stackSymbol in self.stackAlphabet:
+                nextConfigs = set()
+                if (state, "ε", stackSymbol) in self.transitions:
+                    nextConfigs = nextConfigs | self.transitions[(state, "ε", stackSymbol)]
+
+                for inputSymbol in self.inputAlphabet:
+                    newNextConfigs = set()
                     if (state, inputSymbol, stackSymbol) in self.transitions:
-                        nextConfigs = nextConfigs | self.transitions[(state, inputSymbol, stackSymbol)]
-                    if (state, "ε", stackSymbol) in self.transitions:
-                        nextConfigs = nextConfigs | self.transitions[(state, "ε", stackSymbol)]
-                    if len(nextConfigs) > 1:
+                        newNextConfigs = nextConfigs | self.transitions[(state, inputSymbol, stackSymbol)]
+                    if len(newNextConfigs) > 1:
                         return False
         return True
+
+    def _hasEpsilonTransitions(self) -> bool:
+        for (_, inputSymbol, _), _ in self.transitions.items():
+            if inputSymbol == "ε": 
+                return True
+        return False
+
+    def accepts(self, inputString: str) -> bool:
+        assert self.isDeterministic(), "PDA is not deterministic. Membership checking with NPDA has not been implemented yet"
+        assert not self._hasEpsilonTransitions(), "PDA has epsilon transitions. Membership checking with PDA with epsilon transitions has not been implemented yet"
+        currentState = self.startState
+        stack = [self.initialStackSymbol]
+        inputString = list(inputString)
+        while inputString:
+            inputSymbol = inputString.pop(0)
+            stackSymbol = stack.pop()
+            if (currentState, inputSymbol, stackSymbol) not in self.transitions:
+                return False
+            nextState, stackString = list(self.transitions[(currentState, inputSymbol, stackSymbol)])[0]
+            if stackString != "ε":
+                stack.extend(list(stackString)[::-1])
+            currentState = nextState
+        return currentState in self.finalStates 
