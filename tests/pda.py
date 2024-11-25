@@ -14,4 +14,5 @@ if __name__ == '__main__':
         pda = PDA()
         pda.loadFromJSONDict(pdaData)
         pda.image(dir=OUTPUTDIR(), save=True)
+        print(pda.accepts('bbaba'))
         PDAs[pdaName] = pda

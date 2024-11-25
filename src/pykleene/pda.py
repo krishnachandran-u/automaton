@@ -138,4 +138,4 @@ class PDA:
             if stackString != "ε":
                 stack.extend(list(stackString)[::-1])
             currentState = nextState
-        return currentState in self.finalStates 
+        return currentState in self.finalStates or len(stack) == 0
