@@ -2,7 +2,7 @@
     "LBA_ADD": {
         "states": ["q0", "q1", "q2", "t", "r"],
         "inputAlphabet": ["0", "1"],
-        "tapeAlphabet": ["0", "1", "#", "♭", "⊢"],
+        "tapeAlphabet": ["0", "1", "#", "♭", "⊢", "⊣"],
         "startState": "q0",
         "transitions": [
             ["q0", "⊢", "q0", "⊢", "R"],

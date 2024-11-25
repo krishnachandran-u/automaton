@@ -31,16 +31,11 @@ class LBA(TM):
             print(e)
             self._setNone()
 
-    def isValid(self) -> bool:
-        super().isValid()
-        assert self.rightEndMarker in self.tapeAlphabet, f"Right end marker {self.rightEndMarker} not in tape alphabet"
-        return True
-
     def loadFromJSONDict(self, jsonDict: dict) -> None:
-        super().loadFromJSONDict(jsonDict)
         self.rightEndMarker = jsonDict['rightEndMarker']
+        super().loadFromJSONDict(jsonDict)
         try:
-            if self.rightEndMarker: assert self.rightEndMarker in self.tapeAlphabet, f"Left end marker {self.rightEndMarker} not in tape alphabet {self.tapeAlphabet}"
+            if self.rightEndMarker: assert self.rightEndMarker in self.tapeAlphabet, f"Right end marker {self.rightEndMarker} not in tape alphabet {self.tapeAlphabet}"
         except AssertionError as e:
             print(e)
             self._setNone()
@@ -53,15 +48,13 @@ class LBA(TM):
         tape[1:1+len(inputString)] = list(inputString)
         tape[0] = self.leftEndMarker
         tape[self.tapeLength-1] = self.rightEndMarker
-        horizon = (len(inputString) - 1) + 1
         head = 1
         state = self.startState
         while state not in [self.acceptState, self.rejectState]:
             assert head >= 0 and head < self.tapeLength, f"Read/Write head out of bounds: {head}"
             assert tape[head] in self.tapeAlphabet, f"Symbol {tape[head]} not in tape alphabet"
-            horizon = max(horizon, head)
             if verbose:
-                print(f"{''.join(tape[:horizon+1])} | ({state}, {head})")
+                print(f"{''.join(tape)} | ({state}, {head})")
             if state == self.acceptState or state == self.rejectState:
                 break
             readSymbol = tape[head]
@@ -80,9 +73,9 @@ class LBA(TM):
             else:
                 assert False, f"No transition for state {state} and symbol {readSymbol}"
         if state == self.acceptState:
-            return True, ''.join(tape[:horizon+1])
+            return True, ''.join(tape)
         elif state == self.rejectState:
-            return False, ''.join(tape[:horizon+1])
+            return False, ''.join(tape)
         assert False, f"TM halted in undefined state: {state}" 
 
 

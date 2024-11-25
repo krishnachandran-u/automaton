@@ -16,4 +16,4 @@ if __name__ == '__main__':
         lba = LBA()
         lba.loadFromJSONDict(lbaData)
         lba.image(dir=OUTPUTDIR(), save=True)
-        print(lba.accepts('1111#11111', verbose=False, tapeLenFunc=lambda x: x+10))
+        print(lba.accepts('1111#11111', verbose=True, tapeLenFunc=lambda x: x+10))
