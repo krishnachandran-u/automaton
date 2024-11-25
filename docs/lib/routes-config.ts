@@ -36,7 +36,24 @@ export const ROUTES: EachRoute[] = [
       { title: "Deterministic Finite Automaton", href: "/dfa" },
       { title: "Nondeterministic Finite Automaton", href: "/nfa" },
       { title: "Pushdown Automaton", href: "/pda" },
+      { title: "Linear Bounded Automaton", href: "/lba" },
       { title: "Turing Machine", href: "/tm" },
+    ],
+  },
+  {
+    title: "Grammars",
+    href: "/grammars",
+    noLink: true,
+    items: [
+      { title: "Grammar", href: "/grammar" },
+    ],
+  },
+  {
+    title: "Regular Expression",
+    href: "/regular-expression",
+    noLink: true,
+    items: [
+      { title: "Regex", href: "/regex" },
     ],
   },
 ];

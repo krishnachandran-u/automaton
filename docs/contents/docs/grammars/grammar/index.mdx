@@ -1,0 +1,117 @@
+---
+title: Grammar
+description: Grammar class in pykleene 
+---
+
+```python showLineNumbers
+nonTerminals: set[str]
+terminals: set[str]
+productions: dict[str, set[str]]
+startSymbol: str
+```
+
+## CONSTRUCTOR
+Initialize a new Grammar with optional parameters.
+
+#### Parameters
+- `nonTerminals`: Set of non-terminal symbols
+- `terminals`: Set of terminal symbols
+- `productions`: Dictionary of production rules
+- `startSymbol`: Starting non-terminal symbol
+
+## loadFromJSONDict
+Load grammar configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "a*bc*<rlg>": {
+        "nonTerminals": ["S", "A"],
+        "terminals": ["a", "b", "c"],
+        "productions": {
+            "S": ["aS", "bA"],
+            "A": ["cA", "ε"]
+        },
+        "startSymbol": "S"
+    }
+}
+```
+#### Parameters
+- `data`: Dictionary containing grammar configuration
+
+## isValid
+Validate the grammar configuration.
+
+#### Return Value
+Boolean indicating whether the grammar is valid
+
+## isLeftLinear
+Check if the grammar is left-linear.
+
+#### Return Value
+Boolean indicating left-linear grammar
+
+## isRightLinear
+Check if the grammar is right-linear.
+
+#### Return Value
+Boolean indicating right-linear grammar
+
+## isRegular
+Check if the grammar is regular (left or right-linear).
+
+#### Return Value
+Boolean indicating regular grammar
+
+## reverse
+Create a reversed version of the grammar.
+
+#### Return Value
+A new Grammar with reversed productions
+
+## nfa
+Convert the grammar to a Nondeterministic Finite Automaton (NFA).
+
+#### Return Value
+An NFA equivalent to the grammar
+
+## toRightLinear
+Convert the grammar to right-linear form.
+
+#### Return Value
+A right-linear Grammar
+
+## toLeftLinear
+Convert the grammar to left-linear form.
+
+#### Return Value
+A left-linear Grammar
+
+## isContextFree
+Check if the grammar is context-free.
+
+#### Return Value
+Boolean indicating context-free grammar
+
+## isContextSensitive
+Check if the grammar is context-sensitive.
+
+#### Return Value
+Boolean indicating context-sensitive grammar
+
+## isUnrestricted
+Check if the grammar is unrestricted.
+
+#### Return Value
+Boolean indicating unrestricted grammar
+
+## inCNF
+Check if the grammar is in Chomsky Normal Form (CNF).
+
+#### Return Value
+Boolean indicating CNF grammar
+
+## inGNF
+Check if the grammar is in Greibach Normal Form (GNF).
+
+#### Return Value
+Boolean indicating GNF grammar
