@@ -96,33 +96,12 @@ class PDA:
 
         if dir and save:
             try:
-                dot.render(f"{dir}/pda>{id(self)}", format='png', cleanup=True)
+                dot.render(f"{dir}/<pda>{id(self)}", format='png', cleanup=True)
             except Exception as e:
                 print(f"Error while saving image: {e}")
 
         return dot
         
-    """
-    def accept(self, string: str) -> bool:
-        stack = [self.initialStackSymbol]
-        state = self.startState
-        index = 0
-        while index < len(string):
-            if (state, string[index], stack[-1]) in self.transitions:
-                nextState, stackString = self.transitions[(state, string[index], stack[-1])]
-                stack.pop()
-                if stackString != "ε":
-                    stack += list(stackString)[::-1]
-                state = nextState
-                index += 1
-            else:
-                return False
-        if state in self.finalStates:
-            return True
-        else:
-            return False
-    """
-
     def isDeterministic(self) -> bool:
         for state in self.states:
             for inputSymbol in self.inputAlphabet:
@@ -135,29 +114,3 @@ class PDA:
                     if len(nextConfigs) > 1:
                         return False
         return True
-
-    def accepts(self, string: str) -> bool:
-        assert self.isDeterministic(), "PDA is not deterministic"
-        stack = [self.initialStackSymbol]
-        state = self.startState
-        index = 0
-        while index < len(string):
-            if len([t for t in self.transitions if t[0] == state and t[1] == string[index] and t[2] == stack[-1]]) == 1:
-                nextState, stackString = [t for t in self.transitions if t[0] == state and t[1] == string[index] and t[2] == stack[-1]][0][3:]
-                stack.pop()
-                if stackString != "ε":
-                    stack += list(stackString)[::-1]
-                state = nextState
-                index += 1
-            elif len([t for t in self.transitions if t[0] == state and t[1] == "ε" and t[2] == stack[-1]]) == 1:
-                nextState, stackString = [t for t in self.transitions if t[0] == state and t[1] == "ε" and t[2] == stack[-1]][0][3:]
-                stack.pop()
-                if stackString != "ε":
-                    stack += list(stackString)[::-1]
-                state = nextState
-            else:
-                return False
-        if state in self.finalStates or not len(stack):
-            return True
-        else:
-            return False

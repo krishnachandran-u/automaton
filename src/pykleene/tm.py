@@ -1,4 +1,5 @@
 from pykleene.symbols import Symbols
+import graphviz
 
 class TM:
     states: set[str]
@@ -67,3 +68,66 @@ class TM:
         except AssertionError as e:
             print(e)
             self._setNone()
+
+    def image(self, dir: str = None, save: bool = False, monochrome: bool = False) -> graphviz.Digraph:
+        from pykleene._config import graphvizConfig, graphvizAttrConfig, graphvizEdgeConfig
+        from pykleene.utils import randomDarkColor
+
+        dot = graphviz.Digraph(**graphvizConfig)
+
+        dot.attr(**graphvizAttrConfig)
+
+        for state in self.states:
+            if state == self.startState:
+                dot.node(state, shape='circle', color='black', fontcolor='black')
+            elif state == self.acceptState:
+                dot.node(state, shape='doublecircle', color='green', fontcolor='green')
+            elif state == self.rejectState:
+                dot.node(state, shape='doublecircle', color='red', fontcolor='red')
+            else:
+                dot.node(state, shape='circle')
+
+        if monochrome: color = 'black'
+        else: color = randomDarkColor()
+        dot.node(f'{id(self.startState)}', shape='point', label='', color=color, fontcolor=color)
+        dot.edge(f'{id(self.startState)}', self.startState, **graphvizEdgeConfig, color=color, fontcolor=color)
+
+        for (state, readSymbol), (nextState, writeSymbol, direction) in self.transitions.items():
+            if monochrome: color = 'black'
+            else: color = randomDarkColor()
+            dot.edge(state, nextState, label=f"  {readSymbol} | {writeSymbol} -> {direction}  ", **graphvizEdgeConfig, color=color, fontcolor=color)
+
+        if dir and save:
+            try:
+                dot.render(f"{dir}/<tm>{id(self)}", format='png', cleanup=True)
+            except Exception as e:
+                print(f"Error while saving image: {e}")
+
+        return dot
+
+    def accepts(self, inputString: str) -> bool:
+        tape = [self.blankSymbol] * self.tapeLength
+        tape[1:1+len(inputString)] = list(inputString)
+        head = 1
+        state = self.startState
+        while state not in [self.acceptState, self.rejectState]:
+            assert head < 0 or head >= self.tapeLength, f"Read/Write head out of bounds: {head}"
+            assert tape[head] in self.tapeAlphabet, f"Symbol {tape[head]} not in tape alphabet"
+            if state == self.acceptState or state == self.rejectState:
+                break
+            readSymbol = tape[head]
+            if (state, readSymbol) in self.transitions:
+                nextState, writeSymbol, direction = self.transitions[(state, readSymbol)]
+                tape[head] = writeSymbol
+                if direction == 'L':
+                    head -= 1
+                elif direction == 'R':
+                    head += 1
+                state = nextState
+            else:
+                assert False, f"No transition for state {state} and symbol {readSymbol}"
+        if state == self.acceptState:
+            return True
+        elif state == self.rejectState:
+            return False
+        assert False, f"TM halted in undefined state: {state}"
