@@ -4,7 +4,7 @@ from config import INPUTPATH, OUTPUTDIR
 import json
 from pprint import pprint
 
-FILENAME = 'tm.json'
+FILENAME = 'tms.json'
 
 if __name__ == '__main__':
     TMs: Dict[str, TM] = {}

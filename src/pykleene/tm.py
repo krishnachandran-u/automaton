@@ -12,7 +12,7 @@ class TM:
     acceptState: str
     rejectState: str
 
-    tapeLength: int = int(1e5)
+    tapeLength: int = int(1e6)
 
     def _setNone(self) -> None:
         for key, _ in self.__annotations__.items():
@@ -42,7 +42,7 @@ class TM:
                  leftEndMarker: str = None,
                  blankSymbol: str = None,
                  acceptState: str = None,
-                 rejectState: str = None) -> None:
+                 rejectState: str = None):
 
         self.states = states
         self.inputAlphabet = inputAlphabet
@@ -91,9 +91,9 @@ class TM:
             if state == self.startState:
                 dot.node(state, shape='circle', color='black', fontcolor='black')
             elif state == self.acceptState:
-                dot.node(state, shape='doublecircle', color='green', fontcolor='green')
+                dot.node(state, shape='doublecircle', color='darkgreen', fontcolor='darkgreen')
             elif state == self.rejectState:
-                dot.node(state, shape='doublecircle', color='red', fontcolor='red')
+                dot.node(state, shape='doublecircle', color='darkred', fontcolor='darkred')
             else:
                 dot.node(state, shape='circle')
 
