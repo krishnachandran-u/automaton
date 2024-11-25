@@ -1,0 +1,83 @@
+---
+title: PDA
+description: Pushdown Automaton (PDA) class in pykleene 
+---
+
+```python showLineNumbers
+states: set[str]
+inputAlphabet: set[str]
+stackAlphabet: set[str]
+transitions: dict[tuple[str, str, str], set[tuple[str, str]]]
+startState: str
+initialStackSymbol: str
+finalStates: set[str]
+```
+## CONSTRUCTOR 
+Initialize a new Pushdown Automaton with specified parameters.
+#### Parameters
+- `states`: Set of states in the PDA
+- `inputAlphabet`: Set of input symbols
+- `stackAlphabet`: Set of stack symbols
+- `transitions`: Mapping of state-input-stack triples to sets of next state and stack string configurations
+- `startState`: Initial state of the PDA
+- `initialStackSymbol`: Initial symbol on the stack
+- `finalStates`: Set of accepting states
+#### Return Value
+Creates a new PDA object with specified configuration
+
+## loadFromJSONDict
+Load PDA configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "PDA_NAME": {
+        "states": ["q0", "q1", "q2"],
+        "inputAlphabet": ["a", "b"],
+        "stackAlphabet": ["A", "B", "⊥"],
+        "transitions": [
+            ["q0", "a", "⊥", "q0", "A⊥"],
+            ["q0", "a", "A", "q0", "AA"],
+            ["q0", "b", "A", "q1", "ε"],
+            ["q1", "b", "A", "q1", "ε"],
+            ["q1", "a", "⊥", "q2", "⊥"] 
+        ],
+        "startState": "q0",
+        "initialStackSymbol": "⊥",
+        "finalStates": ["q2"]
+    }
+}
+```
+#### Parameters
+- `jsonDict`: Dictionary containing PDA configuration
+#### Return Value
+Populates the PDA object with configuration from the dictionary
+
+## isValid
+Validate the PDA configuration.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the PDA configuration is valid
+
+## accepts
+Determine if a given string is accepted by the PDA.
+#### Parameters
+- `inputString`: Input string to be processed
+#### Return Value
+Boolean indicating whether the input string is accepted by the PDA
+
+## isDeterministic
+Check if the PDA is deterministic.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the PDA is deterministic
+
+## image
+Generate a graphical representation of the PDA.
+#### Parameters
+- `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved
+- `monochrome`: Boolean to generate a black and white visualization
+#### Return Value
+Graphviz Digraph object representing the PDA

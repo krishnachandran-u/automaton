@@ -33,8 +33,10 @@ export const ROUTES: EachRoute[] = [
     href: "/state-machines",
     noLink: true,
     items: [
-      { title: "DFA", href: "/dfa" },
-      { title: "NFA", href: "/nfa" },
+      { title: "Deterministic Finite Automaton", href: "/dfa" },
+      { title: "Nondeterministic Finite Automaton", href: "/nfa" },
+      { title: "Pushdown Automaton", href: "/pda" },
+      { title: "Turing Machine", href: "/tm" },
     ],
   },
 ];
