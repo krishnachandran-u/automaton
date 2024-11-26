@@ -9,11 +9,18 @@ def getAllStrings(alphabets: list, length: int) -> list[str]:
             strings.append(string + alphabet)
     return strings
 
-def _getNextLetter(alphabet: str) -> str:
-    if alphabet == 'Z':
+def _getNextLetter(char: str) -> str:
+    if char == 'Z':
         return 'A'
-    if alphabet == 'z':
+    if char == 'z':
         return 'a'
-    if alphabet == '9':
+    if char == '9':
         return '0'
-    return chr(ord(alphabet) + 1)
+    return chr(ord(char) + 1)
+
+def randomDarkColor() -> str:
+    from random import randint
+    r = randint(50, 150)
+    g = randint(50, 150)
+    b = randint(50, 150)
+    return f'#{r:02x}{g:02x}{b:02x}'  

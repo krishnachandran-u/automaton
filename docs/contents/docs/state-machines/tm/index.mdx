@@ -1,0 +1,85 @@
+---
+title: TM 
+description: Turing Machine (TM) class in pykleene 
+---
+
+```python showLineNumbers
+states: set[str]
+inputAlphabet: set[str]
+tapeAlphabet: set[str]
+startState: str
+transitions: dict[tuple[str, str], tuple[str, str, str]]
+leftEndMarker: str 
+blankSymbol: str 
+acceptState: str
+rejectState: str
+```
+## CONSTRUCTOR 
+Initialize a new Turing Machine with specified parameters.
+#### Parameters
+- `states`: Set of states in the TM
+- `inputAlphabet`: Set of input symbols
+- `tapeAlphabet`: Set of tape symbols
+- `startState`: Initial state of the TM
+- `transitions`: Mapping of state-symbol pairs to next state, write symbol, and direction
+- `leftEndMarker`: Marker for the left end of the tape
+- `blankSymbol`: Symbol used to represent empty tape cells
+- `acceptState`: State indicating successful computation
+- `rejectState`: State indicating failed computation
+#### Return Value
+Creates a new TM object with specified configuration
+
+## loadFromJSONDict
+Load TM configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "TM_ADD": {
+        "states": ["q0", "q1", "q2", "t", "r"],
+        "inputAlphabet": ["0", "1"],
+        "tapeAlphabet": ["0", "1", "#", "♭", "⊢"],
+        "startState": "q0",
+        "transitions": [
+            ["q0", "⊢", "q0", "⊢", "R"],
+            ["q0", "1", "q0", "1", "R"],
+            ["q0", "#", "q0", "1", "R"],
+            ["q0", "♭", "q1", "♭", "L"],
+            ["q1", "1", "q2", "♭", "L"],
+            ["q2", "1", "q2", "1", "L"],
+            ["q2", "⊢", "t", "⊢", "S"]
+        ],
+        "leftEndMarker": "⊢",
+        "blankSymbol": "♭",
+        "acceptState": "t",
+        "rejectState": "r"
+    }
+}
+```
+#### Parameters
+- `jsonDict`: Dictionary containing TM configuration
+#### Return Value
+Populates the TM object with configuration from the dictionary
+
+## isValid
+Validate the TM configuration.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the TM configuration is valid
+
+## accepts
+Determine if a given string is accepted by the TM.
+#### Parameters
+- `inputString`: Input string to be processed
+- `verbose`: Boolean to enable detailed computation tracing
+#### Return Value
+Tuple of (acceptance boolean, final tape contents)
+
+## image
+Generate a graphical representation of the TM.
+#### Parameters
+- `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved
+- `monochrome`: Boolean to generate a black and white visualization
+#### Return Value
+Graphviz Digraph object representing the Turing Machine

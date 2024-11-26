@@ -1,0 +1,22 @@
+{
+    "LBA_ADD": {
+        "states": ["q0", "q1", "q2", "t", "r"],
+        "inputAlphabet": ["0", "1"],
+        "tapeAlphabet": ["0", "1", "#", "♭", "⊢", "⊣"],
+        "startState": "q0",
+        "transitions": [
+            ["q0", "⊢", "q0", "⊢", "R"],
+            ["q0", "1", "q0", "1", "R"],
+            ["q0", "#", "q0", "1", "R"],
+            ["q0", "♭", "q1", "♭", "L"],
+            ["q1", "1", "q2", "♭", "L"],
+            ["q2", "1", "q2", "1", "L"],
+            ["q2", "⊢", "t", "⊢", "S"]
+        ],
+        "leftEndMarker": "⊢",
+        "rightEndMarker": "⊣",
+        "blankSymbol": "♭",
+        "acceptState": "t",
+        "rejectState": "r"
+    }
+}

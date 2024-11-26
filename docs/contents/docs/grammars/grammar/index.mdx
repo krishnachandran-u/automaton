@@ -1,0 +1,132 @@
+---
+title: Grammar
+description: Grammar class in pykleene 
+---
+
+```python showLineNumbers
+nonTerminals: set[str]    
+terminals: set[str]       
+productions: dict[str, set[str]]
+startSymbol: str
+```
+
+## CONSTRUCTOR
+Initialize a new Grammar with specified parameters.
+#### Parameters
+- `nonTerminals`: Set of non-terminal symbols
+- `terminals`: Set of terminal symbols
+- `productions`: Dictionary mapping left-hand sides to sets of right-hand sides
+- `startSymbol`: Starting symbol of the grammar
+#### Return Value
+Creates a new Grammar object with specified configuration
+
+## loadFromJSONDict
+Load grammar configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "nonTerminals": ["S", "A", "B"],
+    "terminals": ["a", "b"],
+    "productions": {
+        "S": ["aA", "bB"],
+        "A": ["aA", "a"],
+        "B": ["bB", "b"]
+    },
+    "startSymbol": "S"
+}
+```
+#### Parameters
+- `data`: Dictionary containing grammar configuration
+#### Return Value
+Populates the Grammar object with configuration from the dictionary
+
+## isValid
+Validate the grammar configuration.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar configuration is valid
+
+## isLeftLinear
+Check if the grammar is left-linear.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is left-linear
+
+## isRightLinear
+Check if the grammar is right-linear.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is right-linear
+
+## isRegular
+Check if the grammar is regular (either left-linear or right-linear).
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is regular
+
+## reverse
+Create a reversed version of the grammar.
+#### Parameters
+None
+#### Return Value
+A new Grammar with reversed production rules
+
+## nfa
+Convert the grammar to an equivalent NFA (for regular grammars).
+#### Parameters
+None
+#### Return Value
+NFA object representing the regular grammar
+
+## toRightLinear
+Convert a regular grammar to right-linear form.
+#### Parameters
+None
+#### Return Value
+Equivalent right-linear grammar
+
+## toLeftLinear
+Convert a regular grammar to left-linear form.
+#### Parameters
+None
+#### Return Value
+Equivalent left-linear grammar
+
+## isContextFree
+Check if the grammar is context-free.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is context-free
+
+## isContextSensitive
+Check if the grammar is context-sensitive.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is context-sensitive
+
+## isUnrestricted
+Check if the grammar is unrestricted.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is unrestricted
+
+## inCNF
+Check if the grammar is in Chomsky Normal Form.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is in CNF
+
+## inGNF
+Check if the grammar is in Greibach Normal Form.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the grammar is in GNF

@@ -1,0 +1,90 @@
+---
+title: LBA 
+description: Linear Bounded Automaton (LBA) class in pykleene 
+---
+
+```python showLineNumbers
+states: set[str]
+inputAlphabet: set[str]
+tapeAlphabet: set[str]
+startState: str
+transitions: dict[tuple[str, str], tuple[str, str, str]]
+leftEndMarker: str 
+rightEndMarker: str
+blankSymbol: str 
+acceptState: str
+rejectState: str
+```
+
+## CONSTRUCTOR 
+Initialize a new Linear Bounded Automaton with specified parameters.
+#### Parameters
+- `states`: Set of states in the LBA
+- `inputAlphabet`: Set of input symbols
+- `tapeAlphabet`: Set of tape symbols
+- `startState`: Initial state of the LBA
+- `transitions`: Mapping of state-symbol pairs to next state, write symbol, and direction
+- `leftEndMarker`: Marker for the left end of the tape
+- `rightEndMarker`: Marker for the right end of the tape
+- `blankSymbol`: Symbol used to represent empty tape cells
+- `acceptState`: State indicating successful computation
+- `rejectState`: State indicating failed computation
+#### Return Value
+Creates a new LBA object with specified configuration
+
+## loadFromJSONDict
+Load LBA configuration from a JSON dictionary.
+```python showLineNumbers
+# Example
+{
+    "LBA_ADD": {
+        "states": ["q0", "q1", "q2", "t", "r"],
+        "inputAlphabet": ["0", "1"],
+        "tapeAlphabet": ["0", "1", "#", "♭", "⊢", "⊣"],
+        "startState": "q0",
+        "transitions": [
+            ["q0", "⊢", "q0", "⊢", "R"],
+            ["q0", "1", "q0", "1", "R"],
+            ["q0", "#", "q0", "1", "R"],
+            ["q0", "♭", "q1", "♭", "L"],
+            ["q1", "1", "q2", "♭", "L"],
+            ["q2", "1", "q2", "1", "L"],
+            ["q2", "⊢", "t", "⊢", "S"]
+        ],
+        "leftEndMarker": "⊢",
+        "rightEndMarker": "⊣",
+        "blankSymbol": "♭",
+        "acceptState": "t",
+        "rejectState": "r"
+    }
+}
+```
+#### Parameters
+- `jsonDict`: Dictionary containing LBA configuration
+#### Return Value
+Populates the LBA object with configuration from the dictionary
+
+## isValid
+Validate the LBA configuration.
+#### Parameters
+None
+#### Return Value
+Boolean indicating whether the LBA configuration is valid
+
+## accepts
+Determine if a given string is accepted by the LBA.
+#### Parameters
+- `inputString`: Input string to be processed
+- `verbose`: Boolean to enable detailed computation tracing
+- `tapeLenFunc`: Function to determine tape length based on input length
+#### Return Value
+Tuple of (acceptance boolean, final tape contents)
+
+## image
+Generate a graphical representation of the LBA.
+#### Parameters
+- `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved
+- `monochrome`: Boolean to generate a black and white visualization
+#### Return Value
+Graphviz Digraph object representing the Linear Bounded Automaton

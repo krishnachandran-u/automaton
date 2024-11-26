@@ -1,0 +1,52 @@
+---
+title: RE 
+description: Regular Expression (RE) class in pykleene 
+---
+
+```python showLineNumbers
+OPERATORS = ['+', '.', '*']
+PARENTHESES = ['(', ')']
+PRECEDENCE = {
+        '+': 1,  
+        '.': 2, 
+        '*': 3, 
+        '(': 0, 
+        ')': 0
+}
+```
+## format 
+Formats a raw regular expression by inserting implicit concatenation operators.
+#### Parameters
+- `regex`: Input regular expression string
+#### Returns
+Formatted regular expression string
+
+## postfix 
+Converts infix regular expression to postfix notation using the Shunting Yard algorithm.
+#### Parameters
+- `regex`: Input regular expression string
+#### Returns
+Postfix notation of the regular expression
+
+## expressionTree
+Generates a binary tree representation of the regular expression.
+#### Parameters
+- `regex`: Input regular expression string
+#### Returns
+Binary tree node representing the expression structure
+
+## nfa
+Converts a regular expression to a Nondeterministic Finite Automaton (NFA).
+#### Parameters
+- `regex`: Input regular expression string
+- `method`: Conversion method (`'regexTree'` or `'postfix'`)
+#### Returns
+NFA representing the regular expression
+
+## image
+Generates a graphical visualization of the regular expression.
+#### Parameters
+- `param`: Expression tree or postfix expression (type: Class `BinaryTreeNode`) 
+- `type`: Visualization type (currently only supports `'regexTree'`)
+- `dir`: Directory to save the image
+- `save`: Boolean to determine if image should be saved

@@ -131,8 +131,8 @@ class RE:
                     finalStates=rightNfa.finalStates
                 )
 
-                newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
-                newNfa = newNfa.addTransition(list(rightNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
+                newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.finalStates)[0])
+                newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(rightNfa.startStates)[0])
                 return newNfa, cnt
 
             elif node.data == '.':
@@ -172,7 +172,7 @@ class RE:
                 elif char == '*':  
                     leftNfa = stack.pop()
                     newNfa = deepcopy(leftNfa)
-                    newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(leftNfa.finalStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(rightNfa.finalStates)[0])
                     newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
                     stack.append(newNfa)
                 
@@ -186,8 +186,8 @@ class RE:
                         startStates=leftNfa.startStates,
                         finalStates=rightNfa.finalStates
                     )
-                    newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.startStates)[0])
-                    newNfa = newNfa.addTransition(list(rightNfa.finalStates)[0], 'ε', list(leftNfa.startStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.finalStates)[0], 'ε', list(rightNfa.finalStates)[0])
+                    newNfa = newNfa.addTransition(list(leftNfa.startStates)[0], 'ε', list(rightNfa.startStates)[0])
                     stack.append(newNfa)
                 
                 elif char == '.':  

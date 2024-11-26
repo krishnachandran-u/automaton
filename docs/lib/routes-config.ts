@@ -33,8 +33,55 @@ export const ROUTES: EachRoute[] = [
     href: "/state-machines",
     noLink: true,
     items: [
-      { title: "DFA", href: "/dfa" },
-      { title: "NFA", href: "/nfa" },
+      { title: "Deterministic Finite Automaton", href: "/dfa" },
+      { title: "Nondeterministic Finite Automaton", href: "/nfa" },
+      { title: "Pushdown Automaton", href: "/pda" },
+      { title: "Linear Bounded Automaton", href: "/lba" },
+      { title: "Turing Machine", href: "/tm" },
+    ],
+  },
+  {
+    title: "Grammars",
+    href: "/grammars",
+    noLink: true,
+    items: [
+      { title: "Grammar", href: "/grammar" },
+    ],
+  },
+  {
+    title: "Regular Expression",
+    href: "/regular-expression",
+    noLink: true,
+    items: [
+      { title: "Regular Expression", href: "/regex" },
+    ],
+  },
+  {
+    title: "Miscellaneous",
+    href: "/miscellaneous",
+    noLink: true,
+    items: [
+      { title: "Utils", href: "/utils" },
+      { title: "Symbols", href: "/symbols" },
+      { title: "Helpers", href: "/helpers" },
+    ],
+  },
+  {
+    title: "Examples",
+    href: "/examples",
+    noLink: true,
+    items: [
+      { title: "Code Examples", href: "/code-examples" },
+    ],
+  },
+  {
+    title: "About",
+    href: "/about",
+    noLink: true,
+    items: [
+      { title: "Acknowledegments", href: "/acknowledgements" },
+      { title: "About Me", href: "/me" },
+      { title: "What's More", href: "/whats-more" },
     ],
   },
 ];
