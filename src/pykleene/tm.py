@@ -122,7 +122,7 @@ class TM:
         tape[1:1+len(inputString)] = list(inputString)
         tape[0] = self.leftEndMarker
         horizon = (len(inputString) - 1) + 1
-        head = 1
+        head = 0
         state = self.startState
         while state not in [self.acceptState, self.rejectState]:
             assert head >= 0 and head < self.tapeLength, f"Read/Write head out of bounds: {head}"
