@@ -1,0 +1,25 @@
+---
+title: Helpers 
+description: Some useful stuff :)
+---
+
+## BinaryTreeNode
+
+```python showLineNumbers
+leftChild: BinaryTreeNode   # Left child node
+data: Any                   # Node data of any type
+rightChild: BinaryTreeNode  # Right child node
+```
+
+### CONSTRUCTOR
+Initialize a new binary tree node.
+#### Parameters
+- `leftChild`: Reference to left child node (default: None)
+- `data`: Data to be stored in the node (default: None)
+- `rightChild`: Reference to right child node (default: None)
+#### Return Value
+Creates a new BinaryTreeNode object with specified configuration
+
+### Usage Notes
+- Although part of internal helpers (`_helpers.py`), the class can be used externally
+- Supports any data type through Python's `typing.Any`

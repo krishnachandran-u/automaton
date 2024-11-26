@@ -1,0 +1,45 @@
+---
+title: utils 
+description: A collection of utility functions for string manipulation, character processing, and color generation.
+---
+
+## getAllStrings
+Generates all possible strings of a given length from a set of alphabets.
+May become computationally expensive for large alphabets or lengths
+#### Parameters
+- `alphabets`: List of characters to generate strings from
+- `length`: Desired length of output strings
+#### Return Value
+List of all possible strings of specified length using given alphabets
+#### Example
+```python showLineNumbers
+alphabets = ['a', 'b']
+length = 2
+strings = getAllStrings(alphabets, length)
+# Returns: ['aa', 'ab', 'ba', 'bb']
+```
+
+## _getNextLetter
+Returns the next letter in sequence, with wraparound for 'Z' to 'A', 'z' to 'a', and '9' to '0'.
+#### Parameters
+- `char`: Single character input
+#### Return Value
+Next character in sequence
+#### Example
+```python showLineNumbers
+next_char = _getNextLetter('Z')  # Returns: 'A'
+next_char = _getNextLetter('z')  # Returns: 'a'
+next_char = _getNextLetter('9')  # Returns: '0'
+next_char = _getNextLetter('B')  # Returns: 'C'
+```
+
+## randomDarkColor
+Generates a random dark color in hexadecimal format.
+#### Parameters
+None
+#### Return Value
+String representing hexadecimal color code (e.g., '#4B6A8C')
+#### Example
+```python showLineNumbers
+color = randomDarkColor()  # Returns: e.g., '#4B6A8C'
+```

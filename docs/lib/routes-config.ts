@@ -53,7 +53,35 @@ export const ROUTES: EachRoute[] = [
     href: "/regular-expression",
     noLink: true,
     items: [
-      { title: "Regex", href: "/regex" },
+      { title: "Regular Expression", href: "/regex" },
+    ],
+  },
+  {
+    title: "Miscellaneous",
+    href: "/miscellaneous",
+    noLink: true,
+    items: [
+      { title: "Utils", href: "/utils" },
+      { title: "Symbols", href: "/symbols" },
+      { title: "Helpers", href: "/helpers" },
+    ],
+  },
+  {
+    title: "Examples",
+    href: "/examples",
+    noLink: true,
+    items: [
+      { title: "Code Examples", href: "/code-examples" },
+    ],
+  },
+  {
+    title: "About",
+    href: "/about",
+    noLink: true,
+    items: [
+      { title: "Acknowledegments", href: "/acknowledgements" },
+      { title: "About Me", href: "/me" },
+      { title: "What's More", href: "/whats-more" },
     ],
   },
 ];
